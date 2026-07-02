@@ -347,13 +347,18 @@ class SensorBME688:
     def getData(self):
         return self.data
 
+    def printSensorData(self):
+        print("================================")
+        print(self.data.temperature)
+        print(self.data.pressure)
+        print(self.data.humidity)
 
-    def runSensor(self):
+    def run(self):
         try:
             while self.connected: 
-                print("Running")
                 try:
                     self.getSensorData()
+                    self.printSensorData()
 
                 except (RuntimeError, IOError) as e:
                     self.connected = False
@@ -363,9 +368,6 @@ class SensorBME688:
         except (RuntimeError, IOError) as e:
             self.connected = False
             # print(e)
-
-    def run(self):
-        self.runSensor() 
 
 
 def __init__():
