@@ -21,18 +21,21 @@ class SensorController:
     def __init__(self):
         self.data = SensorData()
 
-        self.BME688 = None
-        self.FS3000 = None
+        self.BME688 = BME688.SensorBME688()
+        self.FS3000 = FS3000.SensorFS3000()
         # Sensor IMU
-
-        self.bootup()
 
         self.running = True
 
     def bootup(self):
-        self.chcekBME688()
-        self.checkFS3000()
+        self.BME688.bootup()
+        self.FS3000.bootup()
+
+        # self.chcekBME688()
+        # self.checkFS3000()
         #Sensor IMU
+        
+        #Return boot up data back to main
 
     def I2cDevicePresence(self, bus_number, address):
         try:
@@ -49,11 +52,12 @@ class SensorController:
             print("BME688 Sensor Present")
             return True
         else:
-            print("BME688 Sensor Not Found")
+            # print("BME688 Sensor Not Found")
             return False
 
     def runBM688(self):
         try:
+            #Add check if get sensor data worked
             self.BME688.getSensorData()
             
             data = self.BME688.getData()
@@ -64,7 +68,8 @@ class SensorController:
 
         except (RuntimeError, IOError) as e:
             # self.connected = False
-            self.BME688 = None
+            print(f"BM688 Error - {e}")
+            self.BME688.bootup()
     
     def checkFS3000(self):
         if self.I2cDevicePresence(1, 0x28):
@@ -72,7 +77,7 @@ class SensorController:
             print("FS3000 Sensor Present")
             return True
         else:
-            print("FS3000 Sensor Not Found")
+            # print("FS3000 Sensor Not Found")
             return False
 
     def runFS3000(self):
@@ -84,31 +89,33 @@ class SensorController:
             self.data.airFlowMps = data
 
         except (RuntimeError, IOError) as e:
-            self.FS3000 = None
+            print(f"FS3000 - {e}")
+            self.FS3000.bootup()
 
 
     def printData(self):
         print("=======================")
+        print(f"BM688 - Status: {"Active" if self.BME688.getConnectionStatus() else "Not Active"}")
         print(f"Temp - {self.data.temperature}")
         print(f"Pres - {self.data.pressure}")
         print(f"Humi - {self.data.humidity}")
         print("------------")
+        print(f"FS3000 - Status: {"Active" if self.FS3000.getConnectionStatus() else "Not Active"}")
         print(f"Velo - {self.data.airFlowMps}")
         
-
     def runSensors(self):
         try:
             while self.running: 
                 try:
-                    if self.BME688 is not None:
+                    if self.BME688.getConnectionStatus():
                         self.runBM688()
                     else:
-                        self.chcekBME688()
+                        self.BME688.bootup()
 
-                    if self.FS3000 is not None:
+                    if self.FS3000.getConnectionStatus():
                         self.runFS3000()
                     else:
-                        self.checkFS3000()
+                        self.FS3000.bootup()
 
                     
                     self.printData()
@@ -127,6 +134,8 @@ class SensorController:
 
 def __init__():
     p1 = SensorController()
+    p1.bootup()
+
     # p1.start()
     p1.run()
 

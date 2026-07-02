@@ -99,6 +99,8 @@ class CalibrationData:
         self.t1 = 0
         self.t2 = 0
         self.t3 = 0
+    
+        self.t_fine = 0
 
         self.p1 = 0
         self.p2 = 0
@@ -119,7 +121,6 @@ class CalibrationData:
         self.h6 = 0
         self.h7 = 0
 
-        self.t_fine = 0
 
     def setFromArray(self, calibration):
         self.t1 = bytesToWords(calibration[T1_MSB_REG], calibration[T1_LSB_REG])
@@ -162,26 +163,13 @@ class SensorBME688:
         super().__init__()
         
         self.sensorAddress = 0x76
-        self.sensorBus = smbus2.SMBus(1)
-
-        self._softReset()
-        self._setPowerMode(SLEEP_MODE)
 
         self.calibrationData = CalibrationData()
-        self._getCalibrationData()
-
         self.data = Data()
 
-        self.setHumidityOversample(OS_2X)
-        self.setPressureOversample(OS_4X)
-        self.setTemperatureOversample(OS_8X)
-        #Set Filter? 
-        #Gas Status
-        #Set temp offset
+        self.busNum = 1
 
-        #Check Connection?? 
-        self.connected = True
-
+        self.connected = False
 
         # self.airTemperature = 0.0
         # self.airPressure = 0.0
@@ -199,6 +187,36 @@ class SensorBME688:
 
         # self.airHumidityMinimum = 30
         # self.airHumidityMaximum = 40
+
+
+    def bootup(self):
+        self.checkConnection()
+        if(self.connected):
+            #Rap in try block, if failed return False.
+            self._softReset()
+            self._setPowerMode(SLEEP_MODE)
+
+            self._getCalibrationData()
+
+            self.setHumidityOversample(OS_2X)
+            self.setPressureOversample(OS_4X)
+            self.setTemperatureOversample(OS_8X)
+            return True
+
+    def _isConnected(self, busNum):
+        try:
+            with smbus2.SMBus(busNum) as bus:
+                bus.write_quick(self.sensorAddress)
+            return True
+        except OSError:
+            return False
+
+    def checkConnection(self):
+        self.connected = self._isConnected(1)
+        return self.connected
+
+    def getConnectionStatus(self):
+        return self.connected
 
 
     def _getCalibrationData(self):
@@ -240,16 +258,18 @@ class SensorBME688:
         self._setRegs(register, temp)
 
     def _setRegs(self, register, value):
-        if isinstance(value, int):
-            self.sensorBus.write_byte_data(self.sensorAddress, register, value)
-        else:
-            self.sensorBus.write_i2c_block_data(self.sensorAddress, register, value)
+        with smbus2.SMBus(self.busNum ) as bus:
+            if isinstance(value, int):
+                bus.write_byte_data(self.sensorAddress, register, value)
+            else:
+                bus.write_i2c_block_data(self.sensorAddress, register, value)
 
     def _getRegs(self, register, length):
-        if length == 1:
-            return self.sensorBus.read_byte_data(self.sensorAddress, register)
-        else:
-            return self.sensorBus.read_i2c_block_data(self.sensorAddress, register, length)
+        with smbus2.SMBus(self.busNum ) as bus:
+            if length == 1:
+                return bus.read_byte_data(self.sensorAddress, register)
+            else:
+                return bus.read_i2c_block_data(self.sensorAddress, register, length)
 
 
     def _setPowerMode(self, mode):
@@ -316,36 +336,34 @@ class SensorBME688:
 
 
     def getSensorData(self):
+        if self.connected:
+            self._setPowerMode(FORCED_MODE)
 
-        self._setPowerMode(FORCED_MODE)
+            for attempt in range(10):
+                status = self._getRegs(FIELD0_ADDR, 1)
 
-        for attempt in range(10):
-            status = self._getRegs(FIELD0_ADDR, 1)
+                if (status & NEW_DATA_MSK) == 0:
+                    time.sleep(POLL_PERIOD_MS / 1000.0)
+                    continue
 
-            if (status & NEW_DATA_MSK) == 0:
-                time.sleep(POLL_PERIOD_MS / 1000.0)
-                continue
+                regs = self._getRegs(FIELD0_ADDR, FIELD_LENGTH)
+                            
+                adc_pres = (regs[2] << 12) | (regs[3] << 4) | (regs[4] >> 4)
+                adc_temp = (regs[5] << 12) | (regs[6] << 4) | (regs[7] >> 4)
+                adc_hum = (regs[8] << 8) | regs[9]
+                
+                self.data.temperature = self._calcTemp(adc_temp)
+                self.data.pressure = self._calcPressure(adc_pres)
+                self.data.humidity = self._calcHumidity(adc_hum)
 
-            regs = self._getRegs(FIELD0_ADDR, FIELD_LENGTH)
-                        
-            adc_pres = (regs[2] << 12) | (regs[3] << 4) | (regs[4] >> 4)
-            adc_temp = (regs[5] << 12) | (regs[6] << 4) | (regs[7] >> 4)
-            adc_hum = (regs[8] << 8) | regs[9]
-            
-            self.data.temperature = self._calcTemp(adc_temp)
-            self.data.pressure = self._calcPressure(adc_pres)
-            self.data.humidity = self._calcHumidity(adc_hum)
-
-            # print("================================")
-            # print(self.data.temperature)
-            # print(self.data.pressure)
-            # print(self.data.humidity)
-
-            return True
-        return False
+                return True
+            return False
+        else:
+            return False
 
     def getData(self):
         return self.data
+
 
     def printSensorData(self):
         print("================================")
