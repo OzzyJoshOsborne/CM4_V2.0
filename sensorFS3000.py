@@ -21,6 +21,7 @@ class SensorFS3000:
         if(self.connected):
             #Bootup sensor if needed
             return True
+        return False
 
     def _isConnected(self, busNum):
         try:

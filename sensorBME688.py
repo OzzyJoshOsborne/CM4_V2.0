@@ -202,6 +202,7 @@ class SensorBME688:
             self.setPressureOversample(OS_4X)
             self.setTemperatureOversample(OS_8X)
             return True
+        return False
 
     def _isConnected(self, busNum):
         try:

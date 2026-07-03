@@ -11,7 +11,6 @@ class DisplayController:
         self.mainMenuIndex = 0
         self.maxMainMenuIndex = 4
 
-    
     def showLogo(self):
         self.display.showLogo()
 

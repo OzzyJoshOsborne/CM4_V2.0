@@ -42,6 +42,10 @@ class DisplayST7735:
 
         self._loadImages()
 
+        self._showBlackScreen()
+
+
+
     def _loadImages(self):
         #Loads all images from display_images into self.images, using the file name as the image key
         self.imageDir = r'display_images'
@@ -67,6 +71,11 @@ class DisplayST7735:
     def _getTextSize(self, txt):
         return cv2.getTextSize(txt, self.FONT, .4, 1)
 
+
+    def _showBlackScreen(self):
+        img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
+        newFrame = Image.fromarray(img)
+        self._updateDisplay(newFrame)
 
     def showLogo(self):
         newFrame = Image.fromarray(self.images["FCLW"])

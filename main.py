@@ -1,7 +1,73 @@
+import time
+import displayController as Display
+import sensorController as Sensors
+
+class Main:
+    def __init__(self):
+        self.display = Display.DisplayController()
+        #Core
+        #Rabbit
+        #Camera
+        self.sensors = Sensors.SensorController()
+
+        self.bootup()
+
+    def bootup(self):
+        bootStatus = {}
+
+        self.display.showLogo()
+        time.sleep(0.5)
+
+        timeDelay = .2
+
+        #Check Network
+        bootStatus['Check-Network'] = {}
+        bootStatus['Check-Network']["NO NETOWORK FOUND"] = 2
+        self.display.showBootStatus(bootStatus)
+        time.sleep(timeDelay)
+
+        #Rabbit 1
+        bootStatus['Create-Message Send'] = {}
+        bootStatus['Create-Message Send']["Queue Failed"] = 2
+        self.display.showBootStatus(bootStatus)
+        time.sleep(timeDelay)
+
+        #Rabbit 2
+        bootStatus['Create-Message Receiver'] = {}
+        bootStatus['Create-Message Receiver']["Queue Failed"] = 2
+        self.display.showBootStatus(bootStatus)
+        time.sleep(timeDelay)
+
+        #Camera
+        bootStatus['Check-Camera Presence'] = {}
+        bootStatus['Check-Camera Presence']["Camera Not Present"] = 2
+        self.display.showBootStatus(bootStatus)
+        time.sleep(timeDelay)
+
+        #Sensors
+        bootStatus['Check-Device Sensors'] = {}
+        self.display.showBootStatus(bootStatus)
+
+        sensorResults = self.sensors.bootup()
+        sensorList = ["IMU", "ACQ", "AVS"]
+        for idx, sensor in enumerate(sensorResults):
+            msg = sensorList[idx]
+            if sensor:
+                msg += " Sensor Present"
+            else:
+                msg += " Sensor Not Found"
+            bootStatus['Check-Device Sensors'][msg] = 1 if sensor else 2
+            self.display.showBootStatus(bootStatus)
+            time.sleep(timeDelay)
+
+        time.sleep(0.5)
+
+        self.display.showLogoSymbol()
 
 
-def main():
-    print("Hello World")
+# def main():
+#     print("Hello World")
+
 
 if __name__ == '__main__':
-    main()
+    main = Main()

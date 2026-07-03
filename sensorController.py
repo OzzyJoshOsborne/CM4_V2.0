@@ -28,14 +28,15 @@ class SensorController:
         self.running = True
 
     def bootup(self):
-        self.BME688.bootup()
-        self.FS3000.bootup()
+        bme688Status = self.BME688.bootup()
+        fs3000Status = self.FS3000.bootup()
 
         # self.chcekBME688()
         # self.checkFS3000()
         #Sensor IMU
         
         #Return boot up data back to main
+        return [bme688Status, fs3000Status, False]
 
     def I2cDevicePresence(self, bus_number, address):
         try:
