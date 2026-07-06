@@ -21,7 +21,7 @@ class Main:
         self.display.showLogo()
         time.sleep(0.5)
 
-        timeDelay = .2
+        timeDelay = .1
 
         #Check Network
         bootStatus['Check-Network'] = {}
@@ -63,7 +63,7 @@ class Main:
             self.display.showBootStatus(bootStatus)
             time.sleep(timeDelay)
 
-        time.sleep(0.5)
+        time.sleep(0.25)
 
         self.display.showLogoSymbol()
 

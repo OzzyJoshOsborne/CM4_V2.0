@@ -82,7 +82,7 @@ class DisplayController:
             return
 
         #If on index X do Y 
-        self.screen = Screen(self.mainMenuIndex)
+        self.screen = Screens(self.mainMenuIndex)
 
         # match(self.mainMenuIndex):
         #     case 0:
