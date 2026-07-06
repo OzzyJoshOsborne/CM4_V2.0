@@ -46,34 +46,6 @@ class DisplayController:
         print(f"FS3000 - Status: {"Active" if self.data.FS3000Status else "Not Active"}")
         print(f"Velo - {self.data.airFlowMps}")
 
-    def _showScreen(self):
-        match(self.screen):
-            case Screens.SPLASH:
-                self.showMenu = False  
-                self.mainMenuIndex = 0
-                self.showLogoSymbol()
-
-            case Screens.MAIN:
-                self.showMainMenu()
-
-            case Screens.VIEW:
-                raise NotImplementedError("View not implemented")
-
-            case Screens.POS:
-                raise NotImplementedError("Pos not implemented")
-
-            case Screens.SENSORS:
-                print("Sensors Data:")
-                self.printData()
-                
-                raise NotImplementedError("Sensors not implemented")
-
-            case Screens.SETTINGS:
-
-                raise NotImplementedError("Settings not implemented")
-
-
-
     def _updateScreenIndex(self, menuIndexChange):
         if(not self.showMenu):
             return
@@ -114,6 +86,8 @@ class DisplayController:
                 raise NotImplementedError("Pos not implemented")
 
             case Screens.SENSORS:
+                print("Sensors Data:")
+                self.printData()
                 raise NotImplementedError("Sensors not implemented")
 
             case Screens.SETTINGS:
