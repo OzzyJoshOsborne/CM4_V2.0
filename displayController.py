@@ -4,13 +4,12 @@ from turtle import Screen
 import displayST7735 as Display
 
 class Screens(Enum):
-    MAIN = 0
-    VIEW = auto()
+    VIEW = 0
     POS = auto()
     SENSORS = auto()
     SETTINGS = auto()
     SPLASH = auto()
-
+    MAIN = auto()
 
 
 class DisplayController:
@@ -38,6 +37,8 @@ class DisplayController:
 
 
     def _showScreen(self):
+        print(f"Screen - {self.screen} - Index - {self.mainMenuIndex}")
+
         match(self.screen):
             case Screens.SPLASH:
                 self.showLogoSymbol()
@@ -46,16 +47,16 @@ class DisplayController:
                 self.showMainMenu()
 
             case Screens.VIEW:
-                raise NotImplementedError
+                raise NotImplementedError("View not implemented")
 
             case Screens.POS:
-                raise NotImplementedError
+                raise NotImplementedError("Pos not implemented")
 
             case Screens.SENSORS:
-                raise NotImplementedError
+                raise NotImplementedError("Sensors not implemented")
 
             case Screens.SETTINGS:
-                raise NotImplementedError
+                raise NotImplementedError("Settings not implemented")
 
 
 
@@ -74,35 +75,34 @@ class DisplayController:
         print(f"Index - {self.mainMenuIndex}")
 
     def _updateScreen(self):
-        #If on main screen, show main menu
+        #If on splash screen, show main menu
         if(not self.showMenu):
             self.showMenu = True
             self.screen = Screens.MAIN
             return
 
-        match(self.mainMenuIndex):
-            case 0:
-                print("To Implement - View Image")
-                self.screen = Screens(1)
-            case 1:
-                print("To Implement - Camera Pos")
-                self.screen = Screens(2)
-            case 2:
-                print("To Implement - Sensors")
-                self.screen = Screens(3)
-            case 3: 
-                print("To Implement - Settings")
-                self.screen = Screens(4)    
-            case 4:
-              self.showMenu = False  
-              self.mainMenuIndex = 0
-
-
         #If on index X do Y 
+        self.screen = Screen(self.mainMenuIndex)
+
+        # match(self.mainMenuIndex):
+        #     case 0:
+        #         print("To Implement - View Image")
+        #         self.screen = Screens(1)
+        #     case 1:
+        #         print("To Implement - Camera Pos")
+        #         self.screen = Screens(2)
+        #     case 2:
+        #         print("To Implement - Sensors")
+        #         self.screen = Screens(3)
+        #     case 3: 
+        #         print("To Implement - Settings")
+        #         self.screen = Screens(4)    
+        #     case 4:
+        #       self.showMenu = False  
+        #       self.mainMenuIndex = 0
+        #       self.screen = Screens.SPLASH
 
     def handleUserInput(self, input):
-        print(input)
-
         if(input == 1):
             self._updateScreenIndex(1)
 
