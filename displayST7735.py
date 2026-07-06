@@ -64,12 +64,20 @@ class DisplayST7735:
         self.disp.image(frame)
 
     def _addText(self, img, txt, x, y, color):
-        cv2.putText(img, txt, (x, y), self.FONT, .4, color, 1)
+        cv2.putText(img, txt, (x, y), self.FONT, .3, color, 1)
 
         return img
 
     def _getTextSize(self, txt):
-        return cv2.getTextSize(txt, self.FONT, .4, 1)
+        return cv2.getTextSize(txt, self.FONT, .3, 1)
+
+    def _addLogo(self, img):
+        offset = 0
+        logoSize = 32
+
+        logo = self.images["FCL240"].copy()
+        logo = cv2.resize(logo, (logoSize, logoSize))
+        img[offset: offset+logoSize, self.width - offset - logoSize: self.width - offset] = logo
 
 
     def _showBlackScreen(self):
@@ -117,12 +125,7 @@ class DisplayST7735:
         img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
 
         # Logo
-        offset = 0
-        logoSize = 32
-
-        logo = self.images["FCL240"].copy()
-        logo = cv2.resize(logo, (logoSize, logoSize))
-        img[offset: offset+logoSize, self.width - offset - logoSize: self.width - offset] = logo
+        self._addLogo(img)
 
         # Options
         menuOptions = ["View Image", "Camera Pos", "Sensors", "Settings", "Main Screen"]
@@ -151,8 +154,35 @@ class DisplayST7735:
     def showCameraPos(self):
         pass
 
-    def showSensors(self):
-        pass
+    def showSensors(self, data):
+        img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
+
+        # Logo
+        # self._addLogo(img)
+
+        sensors = ["System Temperature",
+                    str(data.temperature),
+                    "Air Pressure",
+                    str(data.pressure),
+                    "Air Humidity",
+                    str(data.humidity),
+                    "Air Flow",
+                    str(data.airFlowMps)
+                ]
+
+        menuStart_y = 10
+        offset = 16
+
+        for idx, sensor in enumerate(sensors):
+            x = int(self.width / 2) - int(self._getTextSize(sensor)[0][0] / 2)
+            color = self.COLOR_WHITE
+
+            self._addText(img, sensor, x, menuStart_y + (offset * idx), color)
+
+
+        newFrame = Image.fromarray(img)
+        self._updateDisplay(newFrame)
+
 
     def showSettings(self):
         pass
@@ -167,11 +197,13 @@ class DisplayST7735:
 
     def test(self):
         # pass
-        self.showLogo()
-        time.sleep(1.0)
-        self.showLogoSymbol()
-        time.sleep(1.0)
-        self.exampleBootSeq()
+        # self.showLogo()
+        # time.sleep(1.0)
+        # self.showLogoSymbol()
+        # time.sleep(1.0)
+        # self.exampleBootSeq()
+        pass
+
 
     def exampleBootSeq(self):
         bootStatus = {}

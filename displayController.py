@@ -36,15 +36,9 @@ class DisplayController:
     def showMainMenu(self):
         self.display.showMainMenu(self.mainMenuIndex)
 
-    def printData(self):
-        print("=======================")
-        print(f"BM688 - Status: {"Active" if self.data.BME688Status else "Not Active"}")
-        print(f"Temp - {self.data.temperature}")
-        print(f"Pres - {self.data.pressure}")
-        print(f"Humi - {self.data.humidity}")
-        print("------------")
-        print(f"FS3000 - Status: {"Active" if self.data.FS3000Status else "Not Active"}")
-        print(f"Velo - {self.data.airFlowMps}")
+    def showSensor(self):
+        while True:
+            self.display.showSensors(self.data)
 
     def _updateScreenIndex(self, menuIndexChange):
         if(not self.showMenu):
@@ -68,7 +62,6 @@ class DisplayController:
 
         self.screen = Screens(self.mainMenuIndex)
 
-
     def _showScreen(self):
         match(self.screen):
             case Screens.SPLASH:
@@ -86,8 +79,6 @@ class DisplayController:
                 raise NotImplementedError("Pos not implemented")
 
             case Screens.SENSORS:
-                print("Sensors Data:")
-                self.printData()
                 raise NotImplementedError("Sensors not implemented")
 
             case Screens.SETTINGS:

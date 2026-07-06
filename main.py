@@ -24,7 +24,7 @@ class Main:
         bootStatus = {}
 
         self.display.showLogo()
-        time.sleep(0.5)
+        time.sleep(0.1)
 
         timeDelay = .1
 
@@ -71,9 +71,9 @@ class Main:
         self.sensorsThread = threading.Thread(target = self.sensors.runSensors, daemon=True)
         self.sensorsThread.start()
 
-        time.sleep(0.25)
+        time.sleep(0.1)
 
-        self.display.showLogoSymbol()
+        self.display.showSensor()
 
     def mainLoop(self):
         running = True
