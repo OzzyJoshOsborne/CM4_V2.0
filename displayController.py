@@ -14,7 +14,8 @@ class Screens(Enum):
 
 class DisplayController:
 
-    def __init__(self):
+    def __init__(self, systemData):
+        self.data = systemData
         
         self.display = Display.DisplayST7735()
         
@@ -35,12 +36,21 @@ class DisplayController:
     def showMainMenu(self):
         self.display.showMainMenu(self.mainMenuIndex)
 
+    def printData(self):
+        print("=======================")
+        print(f"BM688 - Status: {"Active" if self.data.BME688Status else "Not Active"}")
+        print(f"Temp - {self.data.temperature}")
+        print(f"Pres - {self.data.pressure}")
+        print(f"Humi - {self.data.humidity}")
+        print("------------")
+        print(f"FS3000 - Status: {"Active" if self.data.FS3000Status else "Not Active"}")
+        print(f"Velo - {self.data.airFlowMps}")
 
     def _showScreen(self):
-        print(f"Screen - {self.screen} - Index - {self.mainMenuIndex}")
-
         match(self.screen):
             case Screens.SPLASH:
+                self.showMenu = False  
+                self.mainMenuIndex = 0
                 self.showLogoSymbol()
 
             case Screens.MAIN:
@@ -53,9 +63,11 @@ class DisplayController:
                 raise NotImplementedError("Pos not implemented")
 
             case Screens.SENSORS:
+                print()
                 raise NotImplementedError("Sensors not implemented")
 
             case Screens.SETTINGS:
+                self.printData()
                 raise NotImplementedError("Settings not implemented")
 
 
@@ -75,32 +87,35 @@ class DisplayController:
         print(f"Index - {self.mainMenuIndex}")
 
     def _updateScreen(self):
-        #If on splash screen, show main menu
         if(not self.showMenu):
             self.showMenu = True
             self.screen = Screens.MAIN
             return
 
-        #If on index X do Y 
         self.screen = Screens(self.mainMenuIndex)
 
-        # match(self.mainMenuIndex):
-        #     case 0:
-        #         print("To Implement - View Image")
-        #         self.screen = Screens(1)
-        #     case 1:
-        #         print("To Implement - Camera Pos")
-        #         self.screen = Screens(2)
-        #     case 2:
-        #         print("To Implement - Sensors")
-        #         self.screen = Screens(3)
-        #     case 3: 
-        #         print("To Implement - Settings")
-        #         self.screen = Screens(4)    
-        #     case 4:
-        #       self.showMenu = False  
-        #       self.mainMenuIndex = 0
-        #       self.screen = Screens.SPLASH
+
+    def _showScreen(self):
+        match(self.screen):
+            case Screens.SPLASH:
+                self.showMenu = False  
+                self.mainMenuIndex = 0
+                self.showLogoSymbol()
+
+            case Screens.MAIN:
+                self.showMainMenu()
+
+            case Screens.VIEW:
+                raise NotImplementedError("View not implemented")
+
+            case Screens.POS:
+                raise NotImplementedError("Pos not implemented")
+
+            case Screens.SENSORS:
+                raise NotImplementedError("Sensors not implemented")
+
+            case Screens.SETTINGS:
+                raise NotImplementedError("Settings not implemented")
 
     def handleUserInput(self, input):
         if(input == 1):

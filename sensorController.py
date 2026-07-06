@@ -18,8 +18,9 @@ class SensorData:
 
 class SensorController:
 
-    def __init__(self):
-        self.data = SensorData()
+    def __init__(self, systemData):
+        
+        self.data = systemData
 
         self.BME688 = BME688.SensorBME688()
         self.FS3000 = FS3000.SensorFS3000()

@@ -1,14 +1,19 @@
 import time
+import threading
+import systemData as SystemData
 import displayController as Display
 import sensorController as Sensors
 
 class Main:
     def __init__(self):
-        self.display = Display.DisplayController()
+        #Init System Data
+        self.systemData = SystemData.SystemData()
+
+        self.display = Display.DisplayController(self.systemData)
         #Core
         #Rabbit
         #Camera
-        self.sensors = Sensors.SensorController()
+        self.sensors = Sensors.SensorController(self.systemData)
 
         self.bootup()
 
@@ -63,12 +68,14 @@ class Main:
             self.display.showBootStatus(bootStatus)
             time.sleep(timeDelay)
 
+        self.sensorsThread = threading.Thread(target = self.sensors.runSensors, daemon=True)
+        self.sensorsThread.start()
+
         time.sleep(0.25)
 
         self.display.showLogoSymbol()
 
     def mainLoop(self):
-        
         running = True
         while running:
             command = input()
