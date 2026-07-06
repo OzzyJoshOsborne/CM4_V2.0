@@ -1,5 +1,6 @@
 import time
 from enum import Enum, auto
+from turtle import Screen
 import displayST7735 as Display
 
 class Screens(Enum):
@@ -36,16 +37,26 @@ class DisplayController:
         self.display.showMainMenu(self.mainMenuIndex)
 
 
-    def showScreen(self):
+    def _showScreen(self):
         match(self.screen):
+            case Screens.SPLASH:
+                self.showLogoSymbol()
+
             case Screens.MAIN:
-                pass
+                self.showMainMenu()
 
             case Screens.VIEW:
-                pass
+                raise NotImplementedError
 
             case Screens.POS:
-                pass
+                raise NotImplementedError
+
+            case Screens.SENSORS:
+                raise NotImplementedError
+
+            case Screens.SETTINGS:
+                raise NotImplementedError
+
 
 
     def _updateScreenIndex(self, menuIndexChange):
@@ -64,26 +75,22 @@ class DisplayController:
         #If on main screen, show main menu
         if(not self.showMenu):
             self.showMenu = True
+            self.screen = Screens.MAIN
             return
 
-        # print(self.screen)
-        # print("---")
-        # for sc in Screens:
-        #     print(sc)
-        #     print(sc.name)
-        #     print(sc.value)
-
-        print(Screens(self.mainMenuIndex).name)
-        
         match(self.mainMenuIndex):
             case 0:
                 print("To Implement - View Image")
+                self.screen = Screens(1)
             case 1:
                 print("To Implement - Camera Pos")
+                self.screen = Screens(2)
             case 2:
                 print("To Implement - Sensors")
+                self.screen = Screens(3)
             case 3: 
                 print("To Implement - Settings")
+                self.screen = Screens(4)    
             case 4:
               self.showMenu = False  
               self.mainMenuIndex = 0
@@ -103,10 +110,12 @@ class DisplayController:
         elif(input == 3):
             self._updateScreen()
 
-        if self.showMenu:
-            self.showMainMenu()
-        else:
-            self.showLogoSymbol()
+        try:
+            self._showScreen()
+        except NotImplementedError as e:
+            print(f"Error - {e}")
+            self.screen = Screens.MAIN
+
 
 
 
