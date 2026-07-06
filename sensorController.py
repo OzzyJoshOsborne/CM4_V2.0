@@ -19,7 +19,7 @@ class SensorData:
 class SensorController:
 
     def __init__(self, systemData):
-        
+
         self.data = systemData
 
         self.BME688 = BME688.SensorBME688()
@@ -120,7 +120,7 @@ class SensorController:
                         self.FS3000.bootup()
 
                     
-                    self.printData()
+                    # self.printData()
 
                 except (RuntimeError, IOError) as e:
                     pass
