@@ -1,5 +1,16 @@
 import time
+from enum import Enum, auto
 import displayST7735 as Display
+
+class Screens(Enum):
+    MAIN = 0
+    VIEW = auto()
+    POS = auto()
+    SENSORS = auto()
+    SETTINGS = auto()
+    SPLASH = auto()
+
+
 
 class DisplayController:
 
@@ -10,6 +21,7 @@ class DisplayController:
         self.showMenu = False
         self.mainMenuIndex = 0
         self.maxMainMenuIndex = 4
+        self.screen = Screens.SPLASH
 
     def showLogo(self):
         self.display.showLogo()
@@ -24,21 +36,72 @@ class DisplayController:
         self.display.showMainMenu(self.mainMenuIndex)
 
 
+    def showScreen(self):
+        match(self.screen):
+            case Screens.MAIN:
+                pass
 
-    def handleUserInput(self, input):
-  
-        if(input == 1):
-            self.mainMenuIndex += 1
-        elif(input == 2):
-            self.mainMenuIndex -= 1
-        elif(input == 3 or self.mainMenuIndex == self.maxMainMenuIndex):
-            self.showMenu = not self.showMenu   
+            case Screens.VIEW:
+                pass
+
+            case Screens.POS:
+                pass
+
+
+    def _updateScreenIndex(self, menuIndexChange):
+        if(not self.showMenu):
+            return
+
+        self.mainMenuIndex += menuIndexChange
 
         if(self.mainMenuIndex < 0):
             self.mainMenuIndex = self.maxMainMenuIndex
 
         if(self.mainMenuIndex > self.maxMainMenuIndex):
             self.mainMenuIndex = 0
+
+    def _updateScreen(self):
+        #If on main screen, show main menu
+        if(not self.showMenu):
+            self.showMenu = True
+            return
+
+        # print(self.screen)
+        # print("---")
+        # for sc in Screens:
+        #     print(sc)
+        #     print(sc.name)
+        #     print(sc.value)
+
+        print(Screens(self.mainMenuIndex).name)
+        
+        match(self.mainMenuIndex):
+            case 0:
+                print("To Implement - View Image")
+            case 1:
+                print("To Implement - Camera Pos")
+            case 2:
+                print("To Implement - Sensors")
+            case 3: 
+                print("To Implement - Settings")
+            case 4:
+              self.showMenu = False  
+              self.mainMenuIndex = 0
+
+
+        #If on index X do Y 
+
+    def handleUserInput(self, input):
+        print(input)
+
+        if(input == 1):
+            self._updateScreenIndex(1)
+
+        elif(input == 2):
+            self._updateScreenIndex(-1)
+
+        elif(input == 3):
+            self._updateScreen()
 
         if self.showMenu:
             self.showMainMenu()

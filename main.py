@@ -12,6 +12,8 @@ class Main:
 
         self.bootup()
 
+        self.mainLoop()
+
     def bootup(self):
         bootStatus = {}
 
@@ -64,9 +66,24 @@ class Main:
 
         self.display.showLogoSymbol()
 
+    def mainLoop(self):
+        
+        running = True
+        while running:
+            command = input()
 
-# def main():
-#     print("Hello World")
+            match command:
+                case "1":
+                    self.display.handleUserInput(1)
+
+                case "2":
+                    self.display.handleUserInput(2)
+
+                case '':
+                    self.display.handleUserInput(3)
+
+                case "9":
+                    running = False
 
 
 if __name__ == '__main__':
