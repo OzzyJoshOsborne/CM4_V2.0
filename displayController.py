@@ -63,11 +63,13 @@ class DisplayController:
                 raise NotImplementedError("Pos not implemented")
 
             case Screens.SENSORS:
-                print()
+                print("Sensors Data:")
+                self.printData()
+                
                 raise NotImplementedError("Sensors not implemented")
 
             case Screens.SETTINGS:
-                self.printData()
+
                 raise NotImplementedError("Settings not implemented")
 
 
