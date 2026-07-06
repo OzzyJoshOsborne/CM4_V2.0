@@ -71,6 +71,8 @@ class DisplayController:
         if(self.mainMenuIndex > self.maxMainMenuIndex):
             self.mainMenuIndex = 0
 
+        print(f"Index - {self.mainMenuIndex}")
+
     def _updateScreen(self):
         #If on main screen, show main menu
         if(not self.showMenu):
