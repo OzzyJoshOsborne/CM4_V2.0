@@ -68,12 +68,13 @@ class Main:
             self.display.showBootStatus(bootStatus)
             time.sleep(timeDelay)
 
-        self.sensorsThread = threading.Thread(target = self.sensors.runSensors, daemon=True)
+        self.sensorsThread = threading.Thread(target = self.sensors.runSensors, daemon = True)
         self.sensorsThread.start()
 
         time.sleep(0.1)
 
-        self.display.showSensor()
+        self.displayThread = threading.Thread(target = self.display.startScreenLoop(), daemon = True)
+        self.displayThread.start()
 
     def mainLoop(self):
         running = True

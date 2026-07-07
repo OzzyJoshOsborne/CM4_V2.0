@@ -24,6 +24,8 @@ class DisplayController:
         self.maxMainMenuIndex = 4
         self.screen = Screens.SPLASH
 
+        self.displayOn = True
+
     def showLogo(self):
         self.display.showLogo()
 
@@ -37,8 +39,35 @@ class DisplayController:
         self.display.showMainMenu(self.mainMenuIndex)
 
     def showSensor(self):
-        while True:
-            self.display.showSensors(self.data)
+        self.display.showSensors(self.data)
+
+
+    def setScreenView(self):
+        self.screen = Screen.VIEW
+    
+    def setScreenPos(self):
+        self.screen = Screen.POS
+
+    def setScreenSensor(self):
+        self.screen = Screen.SENSORS
+
+    def setScreenSettings(self):
+        self.screen = Screen.SETTINGS
+
+    def setScreenSplash(self):
+        self.screen = Screen.SPLASH
+
+    def setScreenMain(self):
+        self.screen = Screen.MAIN
+
+
+    def startScreenLoop(self):
+        while self.displayOn:
+            try:
+                self._showScreen()
+            except NotImplementedError as e:
+                print(f"Error - {e}")
+                self.screen = Screens.MAIN  
 
     def _updateScreenIndex(self, menuIndexChange):
         if(not self.showMenu):
@@ -79,7 +108,7 @@ class DisplayController:
                 raise NotImplementedError("Pos not implemented")
 
             case Screens.SENSORS:
-                raise NotImplementedError("Sensors not implemented")
+                self.showSensor()
 
             case Screens.SETTINGS:
                 raise NotImplementedError("Settings not implemented")
@@ -94,11 +123,6 @@ class DisplayController:
         elif(input == 3):
             self._updateScreen()
 
-        try:
-            self._showScreen()
-        except NotImplementedError as e:
-            print(f"Error - {e}")
-            self.screen = Screens.MAIN
 
 
 
@@ -118,10 +142,6 @@ def __init__():
     # d1.showLogoSymbol()
     # time.sleep(1.0)
 
-    #Menu
-    d1.handleUserInput(0)
-
-
     #Wait for user input
     running = True
     while running:
@@ -140,63 +160,6 @@ def __init__():
             case "9":
                 running = False
 
-
-def exampleBootSeq(d1):
-    bootStatus = {}
-
-    timeDelay = .1
-    
-    bootStatus['Check-Network'] = {}
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Check-Network']["NO NETOWORK FOUND"] = 2
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-
-    bootStatus['Create-Message Send'] = {}
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Create-Message Send']["Queue Connected"] = 1
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-
-    bootStatus['Create-Message Receiver'] = {}
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Create-Message Receiver']["Queue Failed"] = 2
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-
-    bootStatus['Check-Camera Presence'] = {}
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Check-Camera Presence']["Camera Not Present"] = 2
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-
-    bootStatus['Check-Device Sensors'] = {}
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Check-Device Sensors']["IMU Sensor Not Found"] = 2
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Check-Device Sensors']["ACQ Sensor Present"] = 1
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
-
-    bootStatus['Check-Device Sensors']["AVS Sensor Present"] = 1
-    d1.showBootStatus(bootStatus)
-    time.sleep(timeDelay)
 
 if __name__ == "__main__":
     __init__() 
