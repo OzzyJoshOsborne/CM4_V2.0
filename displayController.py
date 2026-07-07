@@ -141,39 +141,5 @@ class DisplayController:
                 self._prevScreen()
 
 
-def __init__():
-    d1 = DisplayController()
-
-    # #Show logo
-    # d1.showLogo()
-    # time.sleep(1.0)
-
-    # #"Bootup"
-    # exampleBootSeq(d1)
-    # time.sleep(.2)
-
-    # #Show Logo 2
-    # d1.showLogoSymbol()
-    # time.sleep(1.0)
-
-    #Wait for user input
-    running = True
-    while running:
-        command = input()
-
-        match command:
-            case "1":
-                d1.handleUserInput(1)
-
-            case "2":
-                d1.handleUserInput(2)
-
-            case '':
-                d1.handleUserInput(3)
-
-            case "9":
-                running = False
-
-
 if __name__ == "__main__":
     __init__() 

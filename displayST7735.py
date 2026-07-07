@@ -44,8 +44,6 @@ class DisplayST7735:
 
         self._showBlackScreen()
 
-
-
     def _loadImages(self):
         #Loads all images from display_images into self.images, using the file name as the image key
         self.imageDir = r'display_images'
@@ -58,7 +56,6 @@ class DisplayST7735:
             image = cv2.imread(imagePath,cv2.IMREAD_COLOR)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
             self.images[imageName] = cv2.resize(image, (128, 128))
-
 
     def _updateDisplay(self, frame):
         self.disp.image(frame)
@@ -79,6 +76,28 @@ class DisplayST7735:
         logo = cv2.resize(logo, (logoSize, logoSize))
         img[offset: offset+logoSize, self.width - offset - logoSize: self.width - offset] = logo
 
+    def _addLogoText(self, img):
+        offset = 10
+        logoSize = 128
+
+        logo = self.images["FCLW"].copy()
+        logo_h, logo_w, _ = logo.shape
+
+        #Crop Image
+        crop_y = 55
+        crop_h = 22
+        logo = logo[crop_y:crop_y+crop_h, 0:logo_w]
+
+        #Top Left
+        x1 = 0
+        y1 = 10
+
+        #Bottom Right
+        x2 = x1 + logo_w
+        y2 = y1 + crop_h
+
+        # img[offset: offset+logoSize, self.width - offset - logoSize: self.width - offset] = logo
+        img[y1: y2, x1: x2] = logo
 
     def _showBlackScreen(self):
         img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
@@ -98,12 +117,10 @@ class DisplayST7735:
         yPos = 10
         
         for subsystem in bootStatus:
-            print(subsystem)
             cv2.putText(img, subsystem, (5, yPos), self.FONT, 0.3, self.COLOR_WHITE, 1)
             yPos += 10
 
             for system in bootStatus[subsystem]:
-                print("---", system)
 
                 color = self.COLOR_WHITE
                 match bootStatus[subsystem][system]:
@@ -148,6 +165,25 @@ class DisplayST7735:
         self._updateDisplay(newFrame)
 
 
+    def showCameraError(self):
+        img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
+
+        #Add Logo
+        self._addLogoText(img)
+
+        x_offset = 25
+        y1 = 50
+        y2 = 120
+
+        cv2.line(img, (x_offset, y1), (self.width - x_offset, y2), (255, 0, 0), 8)
+        cv2.line(img, (x_offset, y2), (self.width - x_offset, y1), (255, 0, 0), 8)
+
+        print(self.width, self.height)
+
+        newFrame = Image.fromarray(img)
+        self._updateDisplay(newFrame)
+
+
     def showCamera(self):
         pass
 
@@ -179,7 +215,6 @@ class DisplayST7735:
 
             self._addText(img, sensor, x, menuStart_y + (offset * idx), color)
 
-
         newFrame = Image.fromarray(img)
         self._updateDisplay(newFrame)
 
@@ -202,63 +237,7 @@ class DisplayST7735:
         # self.showLogoSymbol()
         # time.sleep(1.0)
         # self.exampleBootSeq()
-        pass
-
-
-    def exampleBootSeq(self):
-        bootStatus = {}
-        
-        bootStatus['Check-Network'] = {}
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Check-Network']["NO NETOWORK FOUND"] = 2
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-
-        bootStatus['Create-Message Send'] = {}
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Create-Message Send']["Queue Connected"] = 1
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-
-        bootStatus['Create-Message Receiver'] = {}
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Create-Message Receiver']["Queue Failed"] = 2
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-
-        bootStatus['Check-Camera Presence'] = {}
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Check-Camera Presence']["Camera Not Present"] = 2
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-
-        bootStatus['Check-Device Sensors'] = {}
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Check-Device Sensors']["IMU Sensor Not Found"] = 2
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Check-Device Sensors']["ACQ Sensor Present"] = 1
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
-
-        bootStatus['Check-Device Sensors']["AVS Sensor Present"] = 1
-        self.showBootStatus(bootStatus)
-        time.sleep(.5)
+        self.showCameraError()
 
 
 def __init__():
