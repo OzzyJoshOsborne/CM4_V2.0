@@ -178,8 +178,6 @@ class DisplayST7735:
         cv2.line(img, (x_offset, y1), (self.width - x_offset, y2), (255, 0, 0), 8)
         cv2.line(img, (x_offset, y2), (self.width - x_offset, y1), (255, 0, 0), 8)
 
-        print(self.width, self.height)
-
         newFrame = Image.fromarray(img)
         self._updateDisplay(newFrame)
 
@@ -187,8 +185,28 @@ class DisplayST7735:
     def showCamera(self):
         pass
 
-    def showCameraPos(self):
-        pass
+    def showCameraPos(self, data):
+        img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
+
+        sensors = ["Pitch", 
+                    str(data.pitch), 
+                    "Roll", 
+                    str(data.roll), 
+                    "Yaw", 
+                    str(data.yaw)
+                ]
+
+        menuStart_y = 10
+        offset = 16
+
+        for idx, sensor in enumerate(sensors):
+            x = int(self.width / 2) - int(self._getTextSize(sensor)[0][0] / 2)
+            color = self.COLOR_WHITE
+
+            self._addText(img, sensor, x, menuStart_y + (offset * idx), color)
+
+        newFrame = Image.fromarray(img)
+        self._updateDisplay(newFrame)
 
     def showSensors(self, data):
         img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
@@ -237,7 +255,7 @@ class DisplayST7735:
         # self.showLogoSymbol()
         # time.sleep(1.0)
         # self.exampleBootSeq()
-        self.showCameraError()
+        self.showCameraPos()
 
 
 def __init__():

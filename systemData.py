@@ -15,8 +15,12 @@ class SystemData:
         self.airFlowMps = None
 
         # BNO086
+        self.pitch = None
+        self.roll = None
+        self.yaw = None
 
         # Camera
+        self.cameraStatus = False
 
         # Display
 

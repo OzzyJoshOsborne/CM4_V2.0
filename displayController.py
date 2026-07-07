@@ -43,6 +43,15 @@ class DisplayController:
     def showMainMenu(self):
         self.display.showMainMenu(self.mainMenuIndex)
 
+    def showCameraView(self):
+        if self.data.cameraStatus:
+            return
+        else:
+            self.display.showCameraError()
+
+    def showCameraPos(self):
+        self.display.showCameraPos(self.data)
+
     def showSensor(self):
         self.display.showSensors(self.data)
 
@@ -113,10 +122,10 @@ class DisplayController:
                 self.showMainMenu()
 
             case Screens.VIEW:
-                raise NotImplementedError("View not implemented")
+                self.showCameraView()
 
             case Screens.POS:
-                raise NotImplementedError("Pos not implemented")
+                self.showCameraPos()
 
             case Screens.SENSORS:
                 self.showSensor()
