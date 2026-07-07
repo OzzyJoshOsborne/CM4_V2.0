@@ -1,5 +1,10 @@
 import time
 import threading
+
+import sys
+import termios
+import tty
+
 import systemData as SystemData
 import displayController as Display
 import sensorController as Sensors
@@ -73,26 +78,64 @@ class Main:
 
         time.sleep(0.1)
 
-        self.displayThread = threading.Thread(target = self.display.startScreenLoop(), daemon = True)
+        self.displayThread = threading.Thread(target = self.display.startScreenLoop, daemon = True)
         self.displayThread.start()
+
+    def getKeyPress(self):
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+
+            if ch == '\x1b':
+                # Escape sequence
+                next1 = sys.stdin.read(1)
+                if next1 == '[':
+                    next2 = sys.stdin.read(1)
+                    return ch + next1 + next2
+                return 'ESC'
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        if ord(ch) == 3: quit()
+        return ch
 
     def mainLoop(self):
         running = True
         while running:
-            command = input()
+            # command = input()
+            
+            key = self.getKeyPress()
 
-            match command:
-                case "1":
-                    self.display.handleUserInput(1)
+            if key == "\x1b[A":# Up
+                self.display.handleUserInput(1)
 
-                case "2":
-                    self.display.handleUserInput(2)
+            elif key == "\x1b[B": # Down
+                self.display.handleUserInput(2)
 
-                case '':
-                    self.display.handleUserInput(3)
+            elif key == "\x1b[C": # Right
+                self.display.handleUserInput(3)
 
-                case "9":
-                    running = False
+            elif key == "\x1b[D": # Left
+                self.display.handleUserInput(4)
+
+            elif key == "\r": # Enter
+                self.display.handleUserInput(3)
+
+            # else:
+            #     print(repr(key))
+            # match command:
+            #     case "1":
+            #         self.display.handleUserInput(1)
+
+            #     case "2":
+            #         self.display.handleUserInput(2)
+
+            #     case '':
+            #         self.display.handleUserInput(3)
+
+            #     case "9":
+            #         running = False
 
 
 if __name__ == '__main__':

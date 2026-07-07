@@ -11,6 +11,11 @@ class Screens(Enum):
     SPLASH = auto()
     MAIN = auto()
 
+class UserInput(Enum):
+    UP = 1
+    DOWN = auto()
+    ENTER = auto()
+    BACK = auto()
 
 class DisplayController:
 
@@ -81,8 +86,6 @@ class DisplayController:
         if(self.mainMenuIndex > self.maxMainMenuIndex):
             self.mainMenuIndex = 0
 
-        print(f"Index - {self.mainMenuIndex}")
-
     def _updateScreen(self):
         if(not self.showMenu):
             self.showMenu = True
@@ -90,6 +93,14 @@ class DisplayController:
             return
 
         self.screen = Screens(self.mainMenuIndex)
+
+
+    def _prevScreen(self):
+        if(self.screen == Screens.MAIN):
+            self.screen = Screens.SPLASH
+            return
+
+        self.screen = Screens.MAIN
 
     def _showScreen(self):
         match(self.screen):
@@ -114,17 +125,20 @@ class DisplayController:
                 raise NotImplementedError("Settings not implemented")
 
     def handleUserInput(self, input):
-        if(input == 1):
-            self._updateScreenIndex(1)
+        userInput = UserInput(input)
 
-        elif(input == 2):
-            self._updateScreenIndex(-1)
+        match(userInput):
+            case UserInput.UP:
+                self._updateScreenIndex(-1)
 
-        elif(input == 3):
-            self._updateScreen()
+            case UserInput.DOWN:
+                self._updateScreenIndex(1)
 
+            case UserInput.ENTER:
+                self._updateScreen()
 
-
+            case UserInput.BACK:
+                self._prevScreen()
 
 
 def __init__():
