@@ -61,17 +61,42 @@ class Main:
         bootStatus['Check-Device Sensors'] = {}
         self.display.showBootStatus(bootStatus)
 
-        sensorResults = self.sensors.bootup()
-        sensorList = ["IMU", "ACQ", "AVS"]
-        for idx, sensor in enumerate(sensorResults):
-            msg = sensorList[idx]
-            if sensor:
-                msg += " Sensor Present"
-            else:
-                msg += " Sensor Not Found"
-            bootStatus['Check-Device Sensors'][msg] = 1 if sensor else 2
-            self.display.showBootStatus(bootStatus)
-            time.sleep(timeDelay)
+        sensorResults = threading.Thread(target = self.sensors.bootup, daemon = True)
+        sensorResults.start()
+
+        sensorsBooting = True
+
+        while sensorsBooting:
+            if self.systemData.BME688Status is not None:
+                msg = 'ACQ'
+                if self.systemData.BME688Status:
+                    msg += " Sensor Present"
+                else:
+                    msg += " Sensor Not Found"
+                bootStatus['Check-Device Sensors'][msg] = 1 if self.systemData.BME688Status else 2
+                self.display.showBootStatus(bootStatus)
+
+            if self.systemData.FS3000Status is not None:
+                msg = 'AVS'
+                if self.systemData.FS3000Status:
+                    msg += " Sensor Present"
+                else:
+                    msg += " Sensor Not Found"
+                bootStatus['Check-Device Sensors'][msg] = 1 if self.systemData.FS3000Status else 2
+                self.display.showBootStatus(bootStatus)
+
+            if self.systemData.BNO086Status is not None:
+                msg = 'IMU'
+                if self.systemData.BNO086Status:
+                    msg += " Sensor Present"
+                else:
+                    msg += " Sensor Not Found"
+                bootStatus['Check-Device Sensors'][msg] = 1 if self.systemData.BNO086Status else 2
+                self.display.showBootStatus(bootStatus)
+
+            if self.systemData.BME688Status is not None and self.systemData.FS3000Status is not None and self.systemData.BNO086Status is not None:
+                sensorsBooting = False
+
 
         self.sensorsThread = threading.Thread(target = self.sensors.runSensors, daemon = True)
         self.sensorsThread.start()
@@ -121,21 +146,6 @@ class Main:
 
             elif key == "\r": # Enter
                 self.display.handleUserInput(3)
-
-            # else:
-            #     print(repr(key))
-            # match command:
-            #     case "1":
-            #         self.display.handleUserInput(1)
-
-            #     case "2":
-            #         self.display.handleUserInput(2)
-
-            #     case '':
-            #         self.display.handleUserInput(3)
-
-            #     case "9":
-            #         running = False
 
 
 if __name__ == '__main__':

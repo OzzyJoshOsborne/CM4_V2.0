@@ -38,10 +38,13 @@ class SensorBNO086:
                 self.i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
                 self.bno = BNO08X_I2C(self.i2c, address=0x4B)
 
+                self.bno.begin_calibration()
+
                 self.bno.enable_feature(BNO_REPORT_ACCELEROMETER)
                 self.bno.enable_feature(BNO_REPORT_GYROSCOPE)
                 self.bno.enable_feature(BNO_REPORT_MAGNETOMETER)
                 self.bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
+
 
                 return True
             
@@ -67,22 +70,26 @@ class SensorBNO086:
 
     def _calucateEulerAngles(self, w, x, y, z):
         #Make sure Quaternion is (w, x, y, z) / (real, i, j, k)
-        #Yaw = atan2(2(wz + xy), 1 - 2(y^2 + z^2))
-        y1 = w * z
-        y2 = x * y
-        yaw = math.atan2(2(y1 + y2), 1 - 2(y^2 + z^2))
-        
-        #Pitch = asin(2(wy - zx))
-        p1 = w * z
-        p2 = z * x
-        pitch = math.asin(2 * (p1 - p2))
+        try:
+            #Yaw = atan2(2(wz + xy), 1 - 2(y^2 + z^2))
+            y1 = w * z
+            y2 = x * y
+            yaw = math.atan2(2.0 * (y1 + y2), 1 - 2.0 * (y**2 + z**2))
+            
+            #Pitch = asin(2(wy - zx))
+            p1 = w * z
+            p2 = z * x
+            pitch = math.asin(2.0 * (p1 - p2))
 
-        #Roll = atan2(2(wx + yz), 1 - 2(x^2 + y^2))
-        r1 = w * x
-        r2 = y * z
-        roll = math.atan2(2(r1 + r2), 1 - 2(x^2 + y^2))
+            #Roll = atan2(2(wx + yz), 1 - 2(x^2 + y^2))
+            r1 = w * x
+            r2 = y * z
+            roll = math.atan2(2.0 * (r1 + r2), 1 - 2.0 * (x**2 + y**2))
 
-        return yaw, pitch, roll
+            return yaw, pitch, roll
+        except ValueError as e:
+            return 0, 0, 0
+
         
 
     def getSensorData(self):

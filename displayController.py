@@ -56,25 +56,6 @@ class DisplayController:
         self.display.showSensors(self.data)
 
 
-    def setScreenView(self):
-        self.screen = Screen.VIEW
-    
-    def setScreenPos(self):
-        self.screen = Screen.POS
-
-    def setScreenSensor(self):
-        self.screen = Screen.SENSORS
-
-    def setScreenSettings(self):
-        self.screen = Screen.SETTINGS
-
-    def setScreenSplash(self):
-        self.screen = Screen.SPLASH
-
-    def setScreenMain(self):
-        self.screen = Screen.MAIN
-
-
     def startScreenLoop(self):
         while self.displayOn:
             try:
@@ -96,13 +77,13 @@ class DisplayController:
             self.mainMenuIndex = 0
 
     def _updateScreen(self):
+        
         if(not self.showMenu):
             self.showMenu = True
             self.screen = Screens.MAIN
             return
 
         self.screen = Screens(self.mainMenuIndex)
-
 
     def _prevScreen(self):
         if(self.screen == Screens.MAIN):

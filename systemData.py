@@ -3,8 +3,9 @@ class SystemData:
 
     def __init__(self):
         #Sensor Data
-        self.BME688Status = False
-        self.FS3000Status = False
+        self.BME688Status = None
+        self.FS3000Status = None
+        self.BNO086Status = None
 
         # BME688
         self.temperature = None
@@ -15,9 +16,9 @@ class SystemData:
         self.airFlowMps = None
 
         # BNO086
+        self.yaw = None
         self.pitch = None
         self.roll = None
-        self.yaw = None
 
         # Camera
         self.cameraStatus = False

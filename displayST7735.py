@@ -1,5 +1,6 @@
 import os
 import time
+import math
 import digitalio
 import board
 import cv2
@@ -186,14 +187,24 @@ class DisplayST7735:
         pass
 
     def showCameraPos(self, data):
+        yaw = data.yaw  * 180.0 / math.pi
+        if yaw < 0:
+            yaw += 360
+        patch = data.pitch * 180.0 / math.pi
+        if patch < 0:
+            patch += 360
+        roll = data.roll * 180.0 / math.pi
+        if roll < 0:    
+            roll += 360
+
         img = np.zeros((self.width, self.height, 4), dtype=np.uint8)
 
-        sensors = ["Pitch", 
-                    str(data.pitch), 
-                    "Roll", 
-                    str(data.roll), 
-                    "Yaw", 
-                    str(data.yaw)
+        sensors = [ "Yaw",
+                    str(yaw),
+                    "Pitch", 
+                    str(patch), 
+                    "Roll",
+                    str(roll)
                 ]
 
         menuStart_y = 10
