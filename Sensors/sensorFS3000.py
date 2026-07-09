@@ -100,7 +100,6 @@ class SensorFS3000:
         return airflowMps
 
 
-
     def getSensorData(self):
         if self.connected:
             self._rawAirflow()

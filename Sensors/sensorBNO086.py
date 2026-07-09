@@ -68,7 +68,7 @@ class SensorBNO086:
         return self.connected
 
 
-    def _calucateEulerAngles(self, w, x, y, z):
+    def _calcEulerAngles(self, w, x, y, z):
         #Make sure Quaternion is (w, x, y, z) / (real, i, j, k)
         try:
             #Yaw = atan2(2(wz + xy), 1 - 2(y^2 + z^2))
@@ -90,7 +90,6 @@ class SensorBNO086:
         except ValueError as e:
             return 0, 0, 0
 
-        
 
     def getSensorData(self):
         if self.connected:
@@ -98,7 +97,7 @@ class SensorBNO086:
             # print("Rotation Vector Quaternion:")
             quat_i, quat_j, quat_k, quat_real = self.bno.quaternion
             # print("I: %0.6f  J: %0.6f K: %0.6f  Real: %0.6f" % (quat_i, quat_j, quat_k, quat_real))
-            yaw, pitch, roll = self._calucateEulerAngles(quat_real, quat_i, quat_j, quat_k)
+            yaw, pitch, roll = self._calcEulerAngles(quat_real, quat_i, quat_j, quat_k)
             # print(f"Yaw - {yaw} - Pitch - {pitch} - Roll - {roll}")
 
             self.data.yaw = yaw

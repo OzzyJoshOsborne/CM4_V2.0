@@ -1,21 +1,7 @@
 import time
-import smbus2
 import sensorBME688 as BME688
 import sensorFS3000 as FS3000
 import sensorBNO086 as BNO086
-
-
-class SensorData:
-    
-    def __init__(self):
-        # BME688
-        self.temperature = None
-        self.pressure = None
-        self.humidity = None
-
-        #FS3000
-        self.airFlowMps = None
-        
 
 class SensorController:
 
@@ -34,30 +20,8 @@ class SensorController:
         self.data.FS3000Status = self.FS3000.bootup()
         self.data.BNO086Status = self.BNO086.bootup()
 
-        # self.chcekBME688()
-        # self.checkFS3000()
-        #Sensor IMU
-        
-        #Return boot up data back to main
         return True
 
-    def I2cDevicePresence(self, bus_number, address):
-        try:
-            with smbus2.SMBus(bus_number) as bus:
-                bus.write_quick(address)
-            return True
-        except OSError:
-            return False
-
-
-    def checkBME688(self):
-        if self.I2cDevicePresence(1, 0x76):
-            self.BME688 = BME688.SensorBME688()
-            print("BME688 Sensor Present")
-            return True
-        else:
-            # print("BME688 Sensor Not Found")
-            return False
 
     def runBM688(self):
         try:
@@ -75,15 +39,6 @@ class SensorController:
             print(f"BM688 Error - {e}")
             self.BME688.bootup()
     
-    def checkFS3000(self):
-        if self.I2cDevicePresence(1, 0x28):
-            self.FS3000 = FS3000.SensorFS3000()
-            print("FS3000 Sensor Present")
-            return True
-        else:
-            # print("FS3000 Sensor Not Found")
-            return False
-
     def runFS3000(self):
         try:
             self.FS3000.getSensorData()
@@ -96,17 +51,10 @@ class SensorController:
             print(f"FS3000 - {e}")
             self.FS3000.bootup()
 
-    def checkBNO086(self):
-        if self.I2cDevicePresence(1, ):
-            self.BNO086 = BNO086.SensorBNO086()
-            print("BNO086 Sensor Present")
-            return True
-        else:
-            return False
-
     def runBNO086(self):
         try:
             self.BNO086.getSensorData()
+
             data = self.BNO086.getData()
             
             self.data.yaw = data.yaw
@@ -116,7 +64,6 @@ class SensorController:
         except (RuntimeError, IOError) as e:
             print(f"BNO086 - {e}")
             self.BNO086.bootup()
-
 
     def printData(self):
         print("=======================")
@@ -155,7 +102,7 @@ class SensorController:
 
                 time.sleep(1)
         except (RuntimeError, IOError) as e:
-            self.connected = False
+            self.running = False
 
 
     def run(self):

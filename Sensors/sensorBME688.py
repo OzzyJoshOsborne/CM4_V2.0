@@ -160,7 +160,6 @@ class Data:
 class SensorBME688:
 
     def __init__(self):
-        super().__init__()
         
         self.sensorAddress = 0x76
 
@@ -170,24 +169,6 @@ class SensorBME688:
         self.busNum = 1
 
         self.connected = False
-
-        # self.airTemperature = 0.0
-        # self.airPressure = 0.0
-        # self.airHumidity = 0.0
-
-        # self.airTemperatureState = True
-        # self.airPressureState = True
-        # self.airHumidityState = True
-
-        # self.airTemperatureMinimum = 20
-        # self.airTemperatureMaximum = 40
-
-        # self.airPressureMinimum = 500
-        # self.airPressureMaximum = 1500
-
-        # self.airHumidityMinimum = 30
-        # self.airHumidityMaximum = 40
-
 
     def bootup(self):
         self.checkConnection()

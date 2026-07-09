@@ -18,7 +18,7 @@ class Main:
         #Core
         #Rabbit
         #Camera
-        self.sensors = Sensors.SensorController(self.systemData)
+        self.sensorsController = Sensors.SensorController(self.systemData)
 
         self.bootup()
 
@@ -61,7 +61,7 @@ class Main:
         bootStatus['Check-Device Sensors'] = {}
         self.display.showBootStatus(bootStatus)
 
-        sensorResults = threading.Thread(target = self.sensors.bootup, daemon = True)
+        sensorResults = threading.Thread(target = self.sensorsController.bootup, daemon = True)
         sensorResults.start()
 
         sensorsBooting = True
@@ -98,7 +98,7 @@ class Main:
                 sensorsBooting = False
 
 
-        self.sensorsThread = threading.Thread(target = self.sensors.runSensors, daemon = True)
+        self.sensorsThread = threading.Thread(target = self.sensorsController.runSensors, daemon = True)
         self.sensorsThread.start()
 
         time.sleep(0.1)
