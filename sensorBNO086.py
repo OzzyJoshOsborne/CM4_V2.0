@@ -1,6 +1,8 @@
 
 import time
-import smBus2
+import math
+from tkinter import W
+import smbus2
 
 import board
 import busio
@@ -40,6 +42,7 @@ class SensorBNO086:
                 self.bno.enable_feature(BNO_REPORT_GYROSCOPE)
                 self.bno.enable_feature(BNO_REPORT_MAGNETOMETER)
                 self.bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
+
                 return True
             
             except OSError as e:
@@ -62,28 +65,49 @@ class SensorBNO086:
         return self.connected
 
 
+    def _calucateEulerAngles(self, w, x, y, z):
+        #Make sure Quaternion is (w, x, y, z) / (real, i, j, k)
+        #Yaw = atan2(2(wz + xy), 1 - 2(y^2 + z^2))
+        y1 = w * z
+        y2 = x * y
+        yaw = math.atan2(2(y1 + y2), 1 - 2(y^2 + z^2))
+        
+        #Pitch = asin(2(wy - zx))
+        p1 = w * z
+        p2 = z * x
+        pitch = math.asin(2 * (p1 - p2))
+
+        #Roll = atan2(2(wx + yz), 1 - 2(x^2 + y^2))
+        r1 = w * x
+        r2 = y * z
+        roll = math.atan2(2(r1 + r2), 1 - 2(x^2 + y^2))
+
+        return yaw, pitch, roll
+        
+
     def getSensorData(self):
         if self.connected:
             
-            print("Acceleration:")
-            accel_x, accel_y, accel_z = self.bno.acceleration
-            print("X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
-            print("")
+            # print("Acceleration:")
+            # accel_x, accel_y, accel_z = self.bno.acceleration
+            # print("X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
+            # print("")
 
-            print("Gyro:")
-            gyro_x, gyro_y, gyro_z = self.bno.gyro
-            print("X: %0.6f  Y: %0.6f Z: %0.6f rads/s" % (gyro_x, gyro_y, gyro_z))
-            print("")
+            # print("Gyro:")
+            # gyro_x, gyro_y, gyro_z = self.bno.gyro
+            # print("X: %0.6f  Y: %0.6f Z: %0.6f rads/s" % (gyro_x, gyro_y, gyro_z))
+            # print("")
 
-            print("Magnetometer:")
-            mag_x, mag_y, mag_z = self.bno.magnetic
-            print("X: %0.6f  Y: %0.6f Z: %0.6f uT" % (mag_x, mag_y, mag_z))
-            print("")
+            # print("Magnetometer:")
+            # mag_x, mag_y, mag_z = self.bno.magnetic
+            # print("X: %0.6f  Y: %0.6f Z: %0.6f uT" % (mag_x, mag_y, mag_z))
+            # print("")
 
             print("Rotation Vector Quaternion:")
             quat_i, quat_j, quat_k, quat_real = self.bno.quaternion
             print("I: %0.6f  J: %0.6f K: %0.6f  Real: %0.6f" % (quat_i, quat_j, quat_k, quat_real))
-            print("")
+            yaw, pitch, roll = self._calucateEulerAngles(quat_real, quat_i, quat_j, quat_k)
+            print(f"Yaw - {yaw} - Pitch - {pitch} - Roll - {roll}")
 
 
             return True
