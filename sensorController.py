@@ -2,6 +2,7 @@ import time
 import smbus2
 import sensorBME688 as BME688
 import sensorFS3000 as FS3000
+import sensorBNO086 as BNO086
 
 
 class SensorData:
@@ -24,20 +25,21 @@ class SensorController:
 
         self.BME688 = BME688.SensorBME688()
         self.FS3000 = FS3000.SensorFS3000()
-        # Sensor IMU
+        self.BNO086 = BNO086.SensorBNO086()
 
         self.running = True
 
     def bootup(self):
         bme688Status = self.BME688.bootup()
         fs3000Status = self.FS3000.bootup()
+        bno086Status = self.BNO086.bootup()
 
         # self.chcekBME688()
         # self.checkFS3000()
         #Sensor IMU
         
         #Return boot up data back to main
-        return [bme688Status, fs3000Status, False]
+        return [bme688Status, fs3000Status, bno086Status]
 
     def I2cDevicePresence(self, bus_number, address):
         try:
@@ -48,7 +50,7 @@ class SensorController:
             return False
 
 
-    def chcekBME688(self):
+    def checkBME688(self):
         if self.I2cDevicePresence(1, 0x76):
             self.BME688 = BME688.SensorBME688()
             print("BME688 Sensor Present")
@@ -94,16 +96,39 @@ class SensorController:
             print(f"FS3000 - {e}")
             self.FS3000.bootup()
 
+    def checkBNO086(self):
+        if self.I2cDevicePresence(1, ):
+            self.BNO086 = BNO086.SensorBNO086()
+            print("BNO086 Sensor Present")
+            return True
+        else:
+            return False
+
+    def runBNO086(self):
+        try:
+            self.BNO086.getSensorData()
+            data = self.BNO086.getData()
+            
+            self.data.yaw = data.yaw
+            self.data.pitch = data.pitch
+            self.data.roll = data.roll
+
+        except (RuntimeError, IOError) as e:
+            print(f"BNO086 - {e}")
+            self.BNO086.bootup()
+
 
     def printData(self):
         print("=======================")
         print(f"BM688 - Status: {"Active" if self.BME688.getConnectionStatus() else "Not Active"}")
-        print(f"Temp - {self.data.temperature}")
-        print(f"Pres - {self.data.pressure}")
-        print(f"Humi - {self.data.humidity}")
+        print(f"Temp - {self.data.temperature} - Pres - {self.data.pressure} - Humi - {self.data.humidity}")
         print("------------")
         print(f"FS3000 - Status: {"Active" if self.FS3000.getConnectionStatus() else "Not Active"}")
         print(f"Velo - {self.data.airFlowMps}")
+        print("------------")
+        print(f"FS3000 - Status: {"Active" if self.FS3000.getConnectionStatus() else "Not Active"}")
+        print(f"Yaw - {self.data.yaw} - Pitch - {self.data.pitch} - Roll - {self.data.roll}")
+        print("=======================")
         
     def runSensors(self):
         try:
@@ -120,7 +145,10 @@ class SensorController:
                         self.FS3000.bootup()
 
                     
-                    # self.printData()
+                    if self.BNO086.getConnectionStatus():
+                        self.runBNO086()
+                    else:
+                        self.BNO086.bootup()
 
                 except (RuntimeError, IOError) as e:
                     pass
