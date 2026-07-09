@@ -1,7 +1,7 @@
 import time
-import sensorBME688 as BME688
-import sensorFS3000 as FS3000
-import sensorBNO086 as BNO086
+import sensors.sensorBME688 as BME688
+import sensors.sensorFS3000 as FS3000
+import sensors.sensorBNO086 as BNO086
 
 class SensorController:
 

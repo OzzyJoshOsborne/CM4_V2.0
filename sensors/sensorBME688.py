@@ -171,6 +171,7 @@ class SensorBME688:
         self.connected = False
 
     def bootup(self):
+        print("Booting sesnors BME")
         self.checkConnection()
         if(self.connected):
             #Rap in try block, if failed return False.
