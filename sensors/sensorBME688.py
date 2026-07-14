@@ -77,22 +77,6 @@ H5_REG = 30
 H6_REG = 31
 H7_REG = 32
 
-def bytesToWords(msb, lsb, bits=16, signed=False):
-    """Convert a most and least significant byte into a word."""
-    # TODO: Reimplement with struct
-    word = (msb << 8) | lsb
-    if signed:
-        word = twosComp(word, bits)
-    return word
-
-def twosComp(val, bits=16):
-    """Convert two bytes into a two's compliment signed word."""
-    # TODO: Reimplement with struct
-    if val & (1 << (bits - 1)) != 0:
-        val = val - (1 << bits)
-    return val
-
-
 class CalibrationData:
     
     def __init__(self):
@@ -123,28 +107,44 @@ class CalibrationData:
 
 
     def setFromArray(self, calibration):
-        self.t1 = bytesToWords(calibration[T1_MSB_REG], calibration[T1_LSB_REG])
-        self.t2 = bytesToWords(calibration[T2_MSB_REG], calibration[T2_LSB_REG], bits=16, signed=True)
-        self.t3 = twosComp(calibration[T3_REG], bits=8)
+        self.t1 = self.bytesToWords(calibration[T1_MSB_REG], calibration[T1_LSB_REG])
+        self.t2 = self.bytesToWords(calibration[T2_MSB_REG], calibration[T2_LSB_REG], bits=16, signed=True)
+        self.t3 = self.twosComp(calibration[T3_REG], bits=8)
 
-        self.p1 = bytesToWords(calibration[P1_MSB_REG], calibration[P1_LSB_REG])
-        self.p2 = bytesToWords(calibration[P2_MSB_REG], calibration[P2_LSB_REG], bits=16, signed=True)
-        self.p3 = twosComp(calibration[P3_REG], bits=8)
-        self.p4 = bytesToWords(calibration[P4_MSB_REG], calibration[P4_LSB_REG], bits=16, signed=True)
-        self.p5 = bytesToWords(calibration[P5_MSB_REG], calibration[P5_LSB_REG], bits=16, signed=True)
-        self.p6 = twosComp(calibration[P6_REG], bits=8)
-        self.p7 = twosComp(calibration[P7_REG], bits=8)
-        self.p8 = bytesToWords(calibration[P8_MSB_REG], calibration[P8_LSB_REG], bits=16, signed=True)
-        self.p9 = bytesToWords(calibration[P9_MSB_REG], calibration[P9_LSB_REG], bits=16, signed=True)
+        self.p1 = self.bytesToWords(calibration[P1_MSB_REG], calibration[P1_LSB_REG])
+        self.p2 = self.bytesToWords(calibration[P2_MSB_REG], calibration[P2_LSB_REG], bits=16, signed=True)
+        self.p3 = self.twosComp(calibration[P3_REG], bits=8)
+        self.p4 = self.bytesToWords(calibration[P4_MSB_REG], calibration[P4_LSB_REG], bits=16, signed=True)
+        self.p5 = self.bytesToWords(calibration[P5_MSB_REG], calibration[P5_LSB_REG], bits=16, signed=True)
+        self.p6 = self.twosComp(calibration[P6_REG], bits=8)
+        self.p7 = self.twosComp(calibration[P7_REG], bits=8)
+        self.p8 = self.bytesToWords(calibration[P8_MSB_REG], calibration[P8_LSB_REG], bits=16, signed=True)
+        self.p9 = self.bytesToWords(calibration[P9_MSB_REG], calibration[P9_LSB_REG], bits=16, signed=True)
         self.p10 = calibration[P10_REG]
 
         self.h1 = (calibration[H1_MSB_REG] << HUM_REG_SHIFT_VAL) | (calibration[H1_LSB_REG] & BIT_H1_DATA_MSK)
         self.h2 = (calibration[H2_MSB_REG] << HUM_REG_SHIFT_VAL) | (calibration[H2_LSB_REG] >> HUM_REG_SHIFT_VAL)
-        self.h3 = twosComp(calibration[H3_REG], bits=8)
-        self.h4 = twosComp(calibration[H4_REG], bits=8)
-        self.h5 = twosComp(calibration[H5_REG], bits=8)
+        self.h3 = self.twosComp(calibration[H3_REG], bits=8)
+        self.h4 = self.twosComp(calibration[H4_REG], bits=8)
+        self.h5 = self.twosComp(calibration[H5_REG], bits=8)
         self.h6 = calibration[H6_REG]
-        self.h7 = twosComp(calibration[H7_REG], bits=8)
+        self.h7 = self.twosComp(calibration[H7_REG], bits=8)
+
+    def bytesToWords(self, msb, lsb, bits=16, signed=False):
+        """Convert a most and least significant byte into a word."""
+        # TODO: Reimplement with struct
+        word = (msb << 8) | lsb
+        if signed:
+            word = self.twosComp(word, bits)
+        return word
+
+    def twosComp(self, val, bits=16):
+        """Convert two bytes into a two's compliment signed word."""
+        # TODO: Reimplement with struct
+        if val & (1 << (bits - 1)) != 0:
+            val = val - (1 << bits)
+        return val
+
 
 class Data:
     def __init__(self):
@@ -171,19 +171,21 @@ class SensorBME688:
         self.connected = False
 
     def bootup(self):
-        print("Booting sesnors BME")
         self.checkConnection()
         if(self.connected):
-            #Rap in try block, if failed return False.
-            self._softReset()
-            self._setPowerMode(SLEEP_MODE)
+            try:
+                self._softReset()
+                self._setPowerMode(SLEEP_MODE)
 
-            self._getCalibrationData()
+                self._getCalibrationData()
 
-            self.setHumidityOversample(OS_2X)
-            self.setPressureOversample(OS_4X)
-            self.setTemperatureOversample(OS_8X)
-            return True
+                self.setHumidityOversample(OS_2X)
+                self.setPressureOversample(OS_4X)
+                self.setTemperatureOversample(OS_8X)
+
+                return True
+            except (OSError, ValueError) as e:
+                print(f"Error booting up BME688 Sensor - {e}")
         return False
 
     def _isConnected(self, busNum):
@@ -224,6 +226,7 @@ class SensorBME688:
     def setTemperatureOversample(self, value):
         self._setBits(CONF_T_P_MODE_ADDR, OST_MSK, OST_POS, value)
 
+    #Not used, may need to be added later
     def setFilter(self, filter_size):
         pass
 
@@ -248,7 +251,7 @@ class SensorBME688:
                 bus.write_i2c_block_data(self.sensorAddress, register, value)
 
     def _getRegs(self, register, length):
-        with smbus2.SMBus(self.busNum ) as bus:
+        with smbus2.SMBus(self.busNum) as bus:
             if length == 1:
                 return bus.read_byte_data(self.sensorAddress, register)
             else:
@@ -320,27 +323,30 @@ class SensorBME688:
 
     def getSensorData(self):
         if self.connected:
-            self._setPowerMode(FORCED_MODE)
+            try:
+                self._setPowerMode(FORCED_MODE)
 
-            for attempt in range(10):
-                status = self._getRegs(FIELD0_ADDR, 1)
+                for attempt in range(10):
+                    status = self._getRegs(FIELD0_ADDR, 1)
 
-                if (status & NEW_DATA_MSK) == 0:
-                    time.sleep(POLL_PERIOD_MS / 1000.0)
-                    continue
+                    if (status & NEW_DATA_MSK) == 0:
+                        time.sleep(POLL_PERIOD_MS / 1000.0)
+                        continue
 
-                regs = self._getRegs(FIELD0_ADDR, FIELD_LENGTH)
-                            
-                adc_pres = (regs[2] << 12) | (regs[3] << 4) | (regs[4] >> 4)
-                adc_temp = (regs[5] << 12) | (regs[6] << 4) | (regs[7] >> 4)
-                adc_hum = (regs[8] << 8) | regs[9]
-                
-                self.data.temperature = self._calcTemp(adc_temp)
-                self.data.pressure = self._calcPressure(adc_pres)
-                self.data.humidity = self._calcHumidity(adc_hum)
+                    regs = self._getRegs(FIELD0_ADDR, FIELD_LENGTH)
+                                
+                    adc_pres = (regs[2] << 12) | (regs[3] << 4) | (regs[4] >> 4)
+                    adc_temp = (regs[5] << 12) | (regs[6] << 4) | (regs[7] >> 4)
+                    adc_hum = (regs[8] << 8) | regs[9]
+                    
+                    self.data.temperature = self._calcTemp(adc_temp)
+                    self.data.pressure = self._calcPressure(adc_pres)
+                    self.data.humidity = self._calcHumidity(adc_hum)
 
-                return True
-            return False
+                    return True
+                return False
+            except (ValueError, OSError) as e :
+                return False
         else:
             return False
 
