@@ -23,7 +23,7 @@ class SensorController:
         return True
 
 
-    def runBM688(self):
+    def runBME688(self):
         try:
             #Add check if get sensor data worked
             self.BME688.getSensorData()
@@ -82,7 +82,7 @@ class SensorController:
             while self.running: 
                 try:
                     if self.BME688.getConnectionStatus():
-                        self.runBM688()
+                        self.runBME688()
                     else:
                         self.BME688.bootup()
 
