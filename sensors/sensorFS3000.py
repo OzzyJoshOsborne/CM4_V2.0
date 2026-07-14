@@ -60,14 +60,9 @@ class SensorFS3000:
                 read = smbus2.i2c_msg.read(self.sensorAddress, 5)
                 bus.i2c_rdwr(read)
 
-                print(list(read))
-                print(list(read))
-
                 if not self._checkSum(list(read)):
                     print("Checksum failed")
                     return False
-
-                print(list(read))
 
                 airflowRaw = 0
                 dataHighByte = list(read)[1]
