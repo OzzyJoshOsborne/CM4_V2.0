@@ -171,8 +171,5 @@ def test_getSensorData_noSensor():
 
     assert FS3000.getSensorData() == False
 
-#Run
-def test_run_5():
-    pass
 
 
