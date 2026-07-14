@@ -74,12 +74,12 @@ class SensorBNO086:
             self.quaternionData = (quat_real, quat_i, quat_j, quat_k)
             return True
         
-        except RuntimeError, AttributeError:
+        except (RuntimeError, AttributeError) as e:
             return False
 
     def _calcEulerAngles(self, w, x, y, z):
-        print(w,x,y,z)
         #Make sure Quaternion is (w, x, y, z) / (real, i, j, k)
+
         try:
             #Yaw = atan2(2(wz + xy), 1 - 2(y^2 + z^2))
             y1 = w * z
@@ -95,8 +95,6 @@ class SensorBNO086:
             r1 = w * x
             r2 = y * z
             roll = math.atan2(2.0 * (r1 + r2), 1 - 2.0 * (x**2 + y**2))
-
-            print(yaw, pitch, roll)
 
             return yaw, pitch, roll
         
@@ -115,14 +113,13 @@ class SensorBNO086:
                 w, x, y, z = self.quaternionData
 
                 yaw, pitch, roll = self._calcEulerAngles(w, x, y, z )
-                # print(f"Yaw - {yaw} - Pitch - {pitch} - Roll - {roll}")
 
                 self.data.yaw = yaw
                 self.data.pitch = pitch
                 self.data.roll = roll
 
                 return True
-            except RuntimeError, AttributeError:
+            except (RuntimeError, AttributeError) as e:
                 return False
         else:
             return False
