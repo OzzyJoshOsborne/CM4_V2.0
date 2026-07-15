@@ -1,3 +1,5 @@
+from sys import exception
+
 import cv2
 import time
 import subprocess
@@ -24,35 +26,39 @@ class Camera:
             return False        
 
     def _isConnected(self):
-        result = subprocess.run(
-            ["v4l2-ctl", "--list-devices"],
-            capture_output=True, 
-            text=True
-        )
-        # print(result)
-        devices = {}
-        currentDevices = None
+        try:
+            result = subprocess.run(
+                ["v4l2-ctl", "--list-devices"],
+                capture_output=True, 
+                text=True
+            )
+            # print(result)
+            devices = {}
+            currentDevices = None
 
-        for line in result.stdout.splitlines():
-            line = line.rstrip()
+            for line in result.stdout.splitlines():
+                line = line.rstrip()
 
-            if line and not line.startswith("\t"):
-                currentDevices = line.rstrip(":")
-                devices[currentDevices] = []
+                if line and not line.startswith("\t"):
+                    currentDevices = line.rstrip(":")
+                    devices[currentDevices] = []
 
-            elif line.startswith("\t"):
-                path = line.strip()
-                devices[currentDevices].append(path)
+                elif line.startswith("\t"):
+                    path = line.strip()
+                    devices[currentDevices].append(path)
 
-        foundDevice = False
+            foundDevice = False
 
-        for d_key in devices:
-            if "3D" in d_key:
-                foundDevices = True
-                if len(devices[d_key]) >= 3:
-                    foundDevice = True
+            for d_key in devices:
+                if "3D" in d_key:
+                    foundDevices = True
+                    if len(devices[d_key]) >= 3:
+                        foundDevice = True
 
-        return foundDevice
+            return foundDevice
+        except Exception as e:
+            print(f"Error while checking if camera is connected - {e}")
+            return False
 
     def checkConnection(self):
         self.connected = self._isConnected()
@@ -60,12 +66,16 @@ class Camera:
     
 
     def checkStreamRunning(self):
-        result = subprocess.run(
-            ["pgrep", "-f", "mjgp_streamer"], 
-            capture_output=True, 
-            text=True
-        )
-        return result.returncode == 0
+        try:
+            result = subprocess.run(
+                ["pgrep", "-f", "mjpg_streamer"], 
+                capture_output=True, 
+                text=True
+            )
+            return result.returncode == 0
+        except Exception as e:
+            print(f"Error while trying to check if stream is running - {e}")
+            raise Exception("Failed to check if stream is running")
 
     def createCommand(self):
         mjpgLocation = "/usr/local/bin/mjpg_streamer"
@@ -95,32 +105,26 @@ class Camera:
         return command
 
     def startStream(self):
-
-        if self.checkStreamRunning():
-            self.endStream()
-
-        time.sleep(1.0)
-
-        print("Starting Stream...")
-
-        command = self.createCommand()
-
         try:
+            command = self.createCommand()
 
             process = subprocess.Popen(command)
-
-
+        
+            return process.returncode == 0
         except FileNotFoundError as e:
             print(e)
             return None
 
     def endStream(self):
-        result = subprocess.run(
-            ["pkill", "-f", "mjpg_streamer"], 
-            capture_output=True
-        )
-        return result.returncode == 0
-
+        try:
+            result = subprocess.run(
+                ["pkill", "-f", "mjpg_streamer"], 
+                capture_output=True
+            )
+            return result.returncode == 0
+        except Exception as e:
+            print(f"Error while trying to close the stream - {e}")
+            raise Exception("Failed to close the stream")
 
     def run(self):
         status = self.bootup()
