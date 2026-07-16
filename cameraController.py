@@ -1,4 +1,6 @@
+
 import cv2
+import time
 import threading
 from camera import Camera
 
@@ -32,6 +34,9 @@ class CameraController:
             return self.lastFrame.copy()
 
     def getStreamData(self):
+        if not self.camera.streamRunning:
+            self.camera.startStream()
+            time.sleep(0.2)
 
         streamCapture = cv2.VideoCapture(self.camera.streamLocation)
         #Possible Errors - cv2.error, AttributeError, TypeError

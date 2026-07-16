@@ -10,9 +10,8 @@ class Camera:
         
         self.streamLocation = "http://127.0.0.1:8085/?action=stream"
 
-        #TODO: Is stream running
-
         self.connected = False
+        self.streamRunning = False
 
     def bootup(self):
         self.checkConnection()
@@ -113,7 +112,9 @@ class Camera:
             command = self.createCommand()
 
             process = subprocess.Popen(command)
-        
+
+            self.streamRunning = process.returncode == 0
+
             return process.returncode == 0
         except FileNotFoundError as e:
             print(e)
@@ -125,6 +126,7 @@ class Camera:
                 ["pkill", "-f", "mjpg_streamer"], 
                 capture_output=True
             )
+            self.streamRunning = result.returncode == 1
             return result.returncode == 0
         except Exception as e:
             print(f"Error while trying to close the stream - {e}")
