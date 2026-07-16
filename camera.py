@@ -21,7 +21,7 @@ class Camera:
             if self.checkStreamRunning():
                 self.endStream()
                 time.sleep(0.2)
-
+            
             return self.startStream()
         else:
             return False        
@@ -73,6 +73,7 @@ class Camera:
                 capture_output=True, 
                 text=True
             )
+            self.streamRunning = result.returncode == 0
             return result.returncode == 0
         except Exception as e:
             print(f"Error while trying to check if stream is running - {e}")
@@ -111,9 +112,9 @@ class Camera:
 
             process = subprocess.Popen(command)
 
-            self.streamRunning = process.returncode == 0
+            time.sleep(0.2)
 
-            return process.returncode == 0
+            return self.checkStreamRunning()
         except FileNotFoundError as e:
             print(e)
             return None

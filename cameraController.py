@@ -22,6 +22,7 @@ class CameraController:
 
     def bootupCamera(self):
         cameraBootupStatus = self.camera.bootup()
+        print(f"Camera Status = {cameraBootupStatus}")
         self.data.cameraStatus = cameraBootupStatus
 
         return cameraBootupStatus

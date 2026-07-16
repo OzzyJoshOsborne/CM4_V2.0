@@ -24,6 +24,8 @@ class Main:
 
         self.bootup()
 
+        self.startControllers()
+
         self.mainLoop()
 
 
