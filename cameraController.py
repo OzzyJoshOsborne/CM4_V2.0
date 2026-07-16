@@ -22,7 +22,6 @@ class CameraController:
 
     def bootupCamera(self):
         cameraBootupStatus = self.camera.bootup()
-        print(f"Camera Status = {cameraBootupStatus}")
         self.data.cameraStatus = cameraBootupStatus
 
         return cameraBootupStatus
@@ -42,24 +41,26 @@ class CameraController:
 
     def getStreamData(self):
         if not self.camera.streamRunning:
-            self.camera.startStream()
-            time.sleep(0.2)
+            return
+        try:
+            streamCapture = cv2.VideoCapture(self.camera.streamLocation)
+            #Possible Errors - cv2.error, AttributeError, TypeError
 
-        streamCapture = cv2.VideoCapture(self.camera.streamLocation)
-        #Possible Errors - cv2.error, AttributeError, TypeError
+            while self.running:
+                result, videoFrame = streamCapture.read()
 
-        while self.running:
-            result, videoFrame = streamCapture.read()
+                if result is False:
+                    break
+                
+                processedFrame = self.framePreProcessing(videoFrame)
+                
+                with self.threadLock:
+                    self.lastFrame = processedFrame
 
-            if result is False:
-                break
-            
-            processedFrame = self.framePreProcessing(videoFrame)
-            
-            with self.threadLock:
-                self.lastFrame = processedFrame
-
-        streamCapture.release()
+            streamCapture.release()
+        except (cv2.error, AttributeError, TypeError) as e:
+            print(f"Exception while video Capture - {e}")
+            streamCapture.release()
 
     def framePreProcessing(self, frame):
         # print(frame.shape)
