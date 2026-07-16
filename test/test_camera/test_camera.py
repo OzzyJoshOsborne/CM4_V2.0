@@ -135,7 +135,10 @@ def test_startStream_pass(mockSubPro):
         stderr="",
     )
     
+    mockStreamRunning = MagicMock(return_value = True)
+
     camera = Camera()
+    camera.checkStreamRunning = mockStreamRunning
 
     assert camera.startStream() == True
 
@@ -151,6 +154,7 @@ def test_startStream_failed(mockSubPro):
     camera = Camera()
 
     assert camera.startStream() == False
+
 
 #End Strean
 @patch("camera.subprocess")
@@ -194,6 +198,7 @@ def test_bootup_success():
 
     mockConnection = MagicMock()
     mockCheckStream = MagicMock()
+    mockStartStream = MagicMock(return_value = True)
     mockCheckStream.return_value = False
 
     camera = Camera()
@@ -201,6 +206,7 @@ def test_bootup_success():
 
     camera.checkConnection = mockConnection
     camera.checkStreamRunning = mockCheckStream
+    camera.startStream = mockStartStream
 
     assert camera.bootup() == True
 
