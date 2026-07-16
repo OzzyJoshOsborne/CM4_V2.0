@@ -8,6 +8,10 @@ class Camera:
 
     def __init__(self):
         
+        self.streamLocation = "http://127.0.0.1:8085/?action=stream"
+
+        #TODO: Is stream running
+
         self.connected = False
 
     def bootup(self):
@@ -19,7 +23,7 @@ class Camera:
                 self.endStream()
                 time.sleep(0.2)
 
-            self.startStream()
+            # self.startStream()
 
             return True
         else:
@@ -125,6 +129,8 @@ class Camera:
         except Exception as e:
             print(f"Error while trying to close the stream - {e}")
             raise Exception("Failed to close the stream")
+
+    #TODO: Handle Stream Close at any point
 
     def run(self):
         status = self.bootup()

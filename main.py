@@ -8,17 +8,19 @@ import tty
 import systemData as SystemData
 import displayController as Display
 import sensorController as Sensors
+import cameraController as Camera
 
 class Main:
     def __init__(self):
         #Init System Data
         self.systemData = SystemData.SystemData()
 
-        self.display = Display.DisplayController(self.systemData)
         #Core
         #Rabbit
-        #Camera
+        self.cameraController = Camera.CameraController(self.systemData)
         self.sensorsController = Sensors.SensorController(self.systemData)
+
+        self.display = Display.DisplayController(self.systemData, self.cameraController)
 
         self.bootup()
 
@@ -53,9 +55,14 @@ class Main:
 
         #Camera
         bootStatus['Check-Camera Presence'] = {}
-        bootStatus['Check-Camera Presence']["Camera Not Present"] = 2
+        self.display.showBootStatus(bootStatus)
+
+        self.cameraController.bootupCamera()
+
+        bootStatus['Check-Camera Presence']["Camera Not Present"] = 1 if self.systemData.cameraStatus else 2
         self.display.showBootStatus(bootStatus)
         time.sleep(timeDelay)
+
 
         #Sensors
         bootStatus['Check-Device Sensors'] = {}
@@ -97,9 +104,14 @@ class Main:
             if self.systemData.BME688Status is not None and self.systemData.FS3000Status is not None and self.systemData.BNO086Status is not None:
                 sensorsBooting = False
 
+        sensorResults.join()
 
+        #TODO: Start Services: Move to differnt function
         self.sensorsThread = threading.Thread(target = self.sensorsController.runSensors, daemon = True)
         self.sensorsThread.start()
+
+        self.cameraThread = threading.Thread(target = self.cameraController.getStreamData , daemon = True)
+        self.cameraThread.start()
 
         time.sleep(0.1)
 

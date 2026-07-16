@@ -1,6 +1,7 @@
 import time
 from enum import Enum, auto
 from turtle import Screen
+from cameraController import CameraController
 import displayST7735 as Display
 
 class Screens(Enum):
@@ -19,8 +20,9 @@ class UserInput(Enum):
 
 class DisplayController:
 
-    def __init__(self, systemData):
+    def __init__(self, systemData, cameraController:CameraController):
         self.data = systemData
+        self.cameraController = cameraController
         
         self.display = Display.DisplayST7735()
         
@@ -45,7 +47,9 @@ class DisplayController:
 
     def showCameraView(self):
         if self.data.cameraStatus:
-            return
+            frame = self.cameraController.getFrame()
+            self.display.showCamera(frame)
+            
         else:
             self.display.showCameraError()
 
