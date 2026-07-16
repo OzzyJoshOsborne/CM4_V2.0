@@ -106,17 +106,19 @@ class Main:
 
         sensorResults.join()
 
-        #TODO: Start Services: Move to differnt function
+
+    def startControllers(self):
+        #TODO: Threads - Move to controller classes 
         self.sensorsThread = threading.Thread(target = self.sensorsController.runSensors, daemon = True)
         self.sensorsThread.start()
 
-        self.cameraThread = threading.Thread(target = self.cameraController.getStreamData , daemon = True)
-        self.cameraThread.start()
+        self.cameraController.run()
 
         time.sleep(0.1)
 
         self.displayThread = threading.Thread(target = self.display.startScreenLoop, daemon = True)
         self.displayThread.start()
+
 
     def getKeyPress(self):
         fd = sys.stdin.fileno()
@@ -144,6 +146,8 @@ class Main:
             
             key = self.getKeyPress()
 
+            print(key)
+
             if key == "\x1b[A":# Up
                 self.display.handleUserInput(1)
 
@@ -158,6 +162,9 @@ class Main:
 
             elif key == "\r": # Enter
                 self.display.handleUserInput(3)
+
+            elif key == "m":
+                self.cameraController.toggleIFMode()
 
 
 if __name__ == '__main__':

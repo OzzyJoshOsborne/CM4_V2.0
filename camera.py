@@ -22,9 +22,7 @@ class Camera:
                 self.endStream()
                 time.sleep(0.2)
 
-            # self.startStream()
-
-            return True
+            return self.startStream()
         else:
             return False        
 
