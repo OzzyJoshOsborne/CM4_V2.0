@@ -1,7 +1,7 @@
-from sys import exception
 
 import cv2
 import time
+import threading
 import subprocess
 
 class Camera:
@@ -111,7 +111,7 @@ class Camera:
             command = self.createCommand()
 
             process = subprocess.Popen(command)
-
+            self.createStreamMonitor(process)
             time.sleep(0.2)
 
             return self.checkStreamRunning()
@@ -131,7 +131,21 @@ class Camera:
             print(f"Error while trying to close the stream - {e}")
             raise Exception("Failed to close the stream")
 
-    #TODO: Handle Stream Close at any point
+    def onStreamExit(self):
+        self.streamRunning = False;
+        self.monitorThread.join()
+        
+    def monitorStream(self, process, callback):
+        exitCode = process.wait()
+        callback()
+
+    def createStreamMonitor(self, process):
+        self.monitorThread = threading.Thread(
+            target = self.monitorStream,
+            args = (process, self.onStreamExit),
+            daemon = True
+        )
+        self.monitorThread.start()
 
     def run(self):
         status = self.bootup()
