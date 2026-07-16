@@ -184,7 +184,8 @@ class DisplayST7735:
 
 
     def showCamera(self, frame):
-        self._updateDisplay(frame)
+        newFrame = Image.fromarray(frame)
+        self._updateDisplay(newFrame)
 
     def showCameraPos(self, data):
         yaw = data.yaw  * 180.0 / math.pi

@@ -47,13 +47,17 @@ class CameraController:
             if result is False:
                 break
             
-            videoFrame = self.framePreProcessing(videoFrame)
+            processedFrame = self.framePreProcessing(videoFrame)
             
             with self.threadLock:
-                self.lastFrame = videoFrame
+                self.lastFrame = processedFrame
 
         streamCapture.release()
 
     def framePreProcessing(self, frame):
-        newFrame = cv2.resize(frame, 256, 128)
-        return newFrame
+        # print(frame.shape)
+
+        newFrame = cv2.resize(frame, (256, 128))
+        cropimg = newFrame[0:128,0:128, :]
+        colorImg = cv2.cvtColor(cropimg, cv2.COLOR_BGR2RGB)
+        return colorImg
