@@ -42,6 +42,7 @@ class CameraController:
     def getStreamData(self):
         if not self.camera.streamRunning:
             return
+        
         try:
             streamCapture = cv2.VideoCapture(self.camera.streamLocation)
             #Possible Errors - cv2.error, AttributeError, TypeError

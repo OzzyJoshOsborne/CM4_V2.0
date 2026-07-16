@@ -110,9 +110,7 @@ class Main:
 
 
     def startControllers(self):
-        #TODO: Threads - Move to controller classes 
-        self.sensorsThread = threading.Thread(target = self.sensorsController.runSensors, daemon = True)
-        self.sensorsThread.start()
+        self.sensorsController.run()
 
         self.cameraController.run()
 

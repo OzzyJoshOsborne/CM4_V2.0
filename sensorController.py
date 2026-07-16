@@ -1,4 +1,5 @@
 import time
+import threading
 import sensors.sensorBME688 as BME688
 import sensors.sensorFS3000 as FS3000
 import sensors.sensorBNO086 as BNO086
@@ -106,7 +107,8 @@ class SensorController:
 
 
     def run(self):
-        self.runSensors()
+        self.sensorsThread = threading.Thread(target = self.sensorsController.runSensors, daemon = True)
+        self.sensorsThread.start()
 
 
 def __init__():
