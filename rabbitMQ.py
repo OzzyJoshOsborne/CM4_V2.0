@@ -6,12 +6,14 @@ import pika
 
 class RabbitMQ:
 
-    def __init__(self, ip="10.0.1.1"):
+    def __init__(self, queue, ip="10.0.1.1"):
         
         self.ip = ip
         self.port = 5672
 
         self.queueName = "hello"
+
+        self.msgQueue = queue
 
         self.connected = False
         self.channel = None
@@ -34,15 +36,18 @@ class RabbitMQ:
     def sendData(self, data):
         try:
             if not self.connected or self.channel == None:
-                return
+                return False
             
             self.channel.basic_publish(
                 exchange = '',
                 routing_key = 'hello',
                 body = data
             )
+
+            return True
         except Exception as e:
             print(f"Failed to send data - {e}")
+            return False
 
     def receiveData(self):
         try:
@@ -60,7 +65,8 @@ class RabbitMQ:
             raise e
 
     def handleReceivedData(self, ch, method, properties, body):
-        print(f" [X] Data Received {body}")
+        # print(f" [X] Data Received {body}")
+        self.msgQueue.put(body)
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
 

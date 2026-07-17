@@ -1,23 +1,31 @@
+from concurrent.futures import thread
 import time
 import threading
+from queue import Queue
 from rabbitMQ import RabbitMQ
-
+from rabbitCommandHandler import RabbitCommandHandler
 class RabbitMQController:
 
     def __init__(self):
         
-        self.rabbit = RabbitMQ(ip="192.168.89.80")
-        self.rabbitStatus = False
+        self.msgQueue = Queue()
 
-        self.reconnectTimerSeconds = 5 
+        self.rabbit = RabbitMQ(self.msgQueue, ip="192.168.89.80",)
+        self.commandHandler = RabbitCommandHandler()
+
+        self.rabbitStatus = False
 
         self.running = True
 
     def bootupRabbit(self):
         self.rabbitStatus = self.rabbit.createQueue()
 
-    def sendData(self):
-        pass
+    def sendData(self, data):
+        try:
+            self.rabbit.sendData(data)
+        except Exception as e:
+            print(e)
+            self.rabbitStatus = False
 
     def receiveData(self):
         while self.running:
@@ -35,14 +43,23 @@ class RabbitMQController:
     def reconnectRabbit(self):
         self.bootupRabbit()
         print(f"Trynig reconnect - {self.rabbitStatus}")
-        if self.rabbitStatus:
-            return
-        else:
-            time.sleep(self.reconnectTimerSeconds)
+
+    def handleCommands(self):
+        while self.running:
+            newMsg = self.msgQueue.get()
+            self.commandHandler.processsMsg(newMsg)
+
+    def createReceiveThread(self):
+        self.rabbitReceiveThread = threading.Thread(target = self.receiveData, daemon = True)
+        self.rabbitReceiveThread.start()
+
+    def createHandlerThread(self):
+        self.rabbitHandlerThread = threading.Thread(target = self.handleCommands, daemon = True)
+        self.rabbitHandlerThread.start()
 
     def run(self):
-        self.rabbitReciveThread = threading.Thread(target = self.receiveData, daemon = True)
-        self.rabbitReciveThread.start()
+        self.createReceiveThread()
+        self.createHandlerThread()
 
 
 if __name__ == "__main__":

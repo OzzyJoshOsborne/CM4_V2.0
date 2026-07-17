@@ -1,4 +1,6 @@
+
 import time
+from datetime import datetime
 import threading
 
 import sys
@@ -129,7 +131,6 @@ class Main:
 
         sensorResults.join()
 
-
     def startControllers(self):
         self.rabbitController.run()
 
@@ -142,6 +143,18 @@ class Main:
         self.displayThread = threading.Thread(target = self.display.startScreenLoop, daemon = True)
         self.displayThread.start()
 
+    def sendHeartBeat(self):
+        heartbeatMsg = {
+            "type": "heartbeat",
+            "time": datetime.now()
+        }
+
+        self.rabbitController.sendData(heartbeatMsg)
+        time.sleep(5)
+
+    def startHeartbeatThread(self):
+        self.heartBeatThread = threading.Thread(target = self.sendHeartBeat, daemon = True)
+        self.heartBeatThread.start()
 
     def getKeyPress(self):
         fd = sys.stdin.fileno()
@@ -165,6 +178,7 @@ class Main:
     def mainLoop(self):
         running = True
         while running:
+
             # command = input()
             
             key = self.getKeyPress()
