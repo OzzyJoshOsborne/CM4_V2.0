@@ -7,7 +7,7 @@ def recieve():
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
 
-    channel.queue_declare(queue="hello", durable=True, arguments={'x-queue-type': 'quorum'})
+    channel.queue_declare(queue="hello", durable=True)#, arguments={'x-queue-type': 'quorum'})
 
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue="hello", auto_ack=False, on_message_callback = callback)

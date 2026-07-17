@@ -6,7 +6,7 @@ def send(msg, time):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
 
-    channel.queue_declare(queue="hello", durable=True, arguments={'x-queue-type': 'quorum'})
+    channel.queue_declare(queue="hello", durable=True)#, arguments={'x-queue-type': 'quorum'})
 
     # message = ' '.join(sys.argv[1:]) or "Hello Workd!" 
     message = msg

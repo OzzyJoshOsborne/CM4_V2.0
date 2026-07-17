@@ -55,6 +55,7 @@ class Main:
         self.display.showBootStatus(bootStatus)
         time.sleep(timeDelay)
 
+
         #Camera
         bootStatus['Check-Camera Presence'] = {}
         self.display.showBootStatus(bootStatus)
