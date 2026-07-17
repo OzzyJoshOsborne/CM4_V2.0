@@ -9,6 +9,7 @@ import systemData as SystemData
 import displayController as Display
 import sensorController as Sensors
 import cameraController as Camera
+import rabbitMQController as Rabbit
 
 class Main:
     def __init__(self):
@@ -16,7 +17,7 @@ class Main:
         self.systemData = SystemData.SystemData()
 
         #Core
-        #Rabbit
+        self.rabbitController = Rabbit.RabbitMQController()
         self.cameraController = Camera.CameraController(self.systemData)
         self.sensorsController = Sensors.SensorController(self.systemData)
 
@@ -43,17 +44,31 @@ class Main:
         self.display.showBootStatus(bootStatus)
         time.sleep(timeDelay)
 
-        #Rabbit 1
-        bootStatus['Create-Message Send'] = {}
-        bootStatus['Create-Message Send']["Queue Failed"] = 2
-        self.display.showBootStatus(bootStatus)
-        time.sleep(timeDelay)
+        # #Rabbit 1
+        # bootStatus['Create-Message Send'] = {}
+        # bootStatus['Create-Message Send']["Queue Failed"] = 2
+        # self.display.showBootStatus(bootStatus)
+        # time.sleep(timeDelay)
 
-        #Rabbit 2
-        bootStatus['Create-Message Receiver'] = {}
-        bootStatus['Create-Message Receiver']["Queue Failed"] = 2
+        # #Rabbit 2
+        # bootStatus['Create-Message Receiver'] = {}
+        # bootStatus['Create-Message Receiver']["Queue Failed"] = 2
+        # self.display.showBootStatus(bootStatus)
+        # time.sleep(timeDelay)
+
+        bootStatus['Create-Message RabbitMQ'] = {}
         self.display.showBootStatus(bootStatus)
-        time.sleep(timeDelay)
+
+        self.rabbitController.bootupRabbit()
+        msg = ""
+        if self.rabbitController.rabbitStatus:
+            msg += "Queue Success"
+        else:
+            msg += "Queue Failed"
+
+        bootStatus['Create-Message RabbitMQ'][msg] = 1 if self.rabbitController.rabbitStatus else 2
+        self.display.showBootStatus(bootStatus)
+
 
 
         #Camera
@@ -61,10 +76,15 @@ class Main:
         self.display.showBootStatus(bootStatus)
 
         self.cameraController.bootupCamera()
+        msg = ""
+        if self.systemData.cameraStatus:
+            msg += "Camera Present"
+        else:
+            msg += "Camera Not Present"
 
-        bootStatus['Check-Camera Presence']["Camera Not Present"] = 1 if self.systemData.cameraStatus else 2
+        bootStatus['Check-Camera Presence'][msg] = 1 if self.systemData.cameraStatus else 2
         self.display.showBootStatus(bootStatus)
-        time.sleep(timeDelay)
+
 
 
         #Sensors
