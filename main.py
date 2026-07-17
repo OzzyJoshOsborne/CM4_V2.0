@@ -61,7 +61,7 @@ class Main:
         bootStatus['Create-Message RabbitMQ'] = {}
         self.display.showBootStatus(bootStatus)
 
-        self.rabbitController.bootupRabbit()
+        # self.rabbitController.bootupRabbit()
         msg = ""
         if self.rabbitController.rabbitStatus:
             msg += "Queue Success"
@@ -142,6 +142,8 @@ class Main:
 
         self.displayThread = threading.Thread(target = self.display.startScreenLoop, daemon = True)
         self.displayThread.start()
+
+        self.startHeartbeatThread()
 
     def sendHeartBeat(self):
         heartbeatMsg = {

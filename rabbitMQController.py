@@ -4,13 +4,20 @@ import threading
 from queue import Queue
 from rabbitMQ import RabbitMQ
 from rabbitCommandHandler import RabbitCommandHandler
+
 class RabbitMQController:
 
     def __init__(self):
         
         self.msgQueue = Queue()
+        self.sendQueue = Queue()
 
-        self.rabbit = RabbitMQ(self.msgQueue, ip="192.168.89.80",)
+        self.rabbit = RabbitMQ(
+            self.msgQueue, 
+            self.sendQueue,
+            ip="192.168.89.80",
+        )
+
         self.commandHandler = RabbitCommandHandler()
 
         self.rabbitStatus = False
@@ -21,11 +28,12 @@ class RabbitMQController:
         self.rabbitStatus = self.rabbit.createQueue()
 
     def sendData(self, data):
-        try:
-            self.rabbit.sendData(data)
-        except Exception as e:
-            print(e)
-            self.rabbitStatus = False
+        self.sendQueue.put(data)
+        # try:
+        #     self.rabbit.sendData(data)
+        # except Exception as e:
+        #     print(e)
+        #     self.rabbitStatus = False
 
     def receiveData(self):
         while self.running:
@@ -49,8 +57,8 @@ class RabbitMQController:
             newMsg = self.msgQueue.get()
             self.commandHandler.processsMsg(newMsg)
 
-    def createReceiveThread(self):
-        self.rabbitReceiveThread = threading.Thread(target = self.receiveData, daemon = True)
+    def createRabbitThread(self):
+        self.rabbitReceiveThread = threading.Thread(target = self.rabbit.run, daemon = True)
         self.rabbitReceiveThread.start()
 
     def createHandlerThread(self):
@@ -58,14 +66,18 @@ class RabbitMQController:
         self.rabbitHandlerThread.start()
 
     def run(self):
-        self.createReceiveThread()
+        self.createRabbitThread()
         self.createHandlerThread()
 
 
 if __name__ == "__main__":
     r1 = RabbitMQController()
-    r1.bootupRabbit()
+    # r1.bootupRabbit()
     r1.run()
+
+    time.sleep(2)
+
+    r1.sendData("Test")
 
     while True:
         pass
