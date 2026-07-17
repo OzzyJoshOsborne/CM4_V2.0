@@ -43,7 +43,7 @@ class RabbitMQ:
 
     def sendData(self):
         try:
-            print(f"Send data - {self.sendQueue.empty()}")
+            # print(f"Send data - {self.sendQueue.empty()}")
             while not self.sendQueue.empty():
 
                 msg = self.sendQueue.get()

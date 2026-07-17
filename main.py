@@ -146,13 +146,14 @@ class Main:
         self.startHeartbeatThread()
 
     def sendHeartBeat(self):
-        heartbeatMsg = {
-            "type": "heartbeat",
-            "time": datetime.now()
-        }
+        while True:
+            heartbeatMsg = {
+                "type": "heartbeat",
+                "time": datetime.now()
+            }
 
-        self.rabbitController.sendData(heartbeatMsg)
-        time.sleep(5)
+            self.rabbitController.sendData("heartbeatMsg")
+            time.sleep(2)
 
     def startHeartbeatThread(self):
         self.heartBeatThread = threading.Thread(target = self.sendHeartBeat, daemon = True)

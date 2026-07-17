@@ -1,14 +1,11 @@
 
-from socket import MSG_BCAST
-
-
 class RabbitCommandHandler:
 
     def __init__(self):
         pass
 
     def processsMsg(self, msg):
-        print(f"New MSG Recived - {MSG_BCAST}")
+        print(f"New MSG Recived - {msg}")
 
     def handleCommand(self, command):
 
