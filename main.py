@@ -131,6 +131,8 @@ class Main:
 
 
     def startControllers(self):
+        self.rabbitController.run()
+
         self.sensorsController.run()
 
         self.cameraController.run()

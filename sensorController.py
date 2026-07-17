@@ -107,7 +107,7 @@ class SensorController:
 
 
     def run(self):
-        self.sensorsThread = threading.Thread(target = self.sensorsController.runSensors, daemon = True)
+        self.sensorsThread = threading.Thread(target = self.runSensors, daemon = True)
         self.sensorsThread.start()
 
 

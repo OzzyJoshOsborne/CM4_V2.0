@@ -34,13 +34,14 @@ class RabbitMQController:
 
     def reconnectRabbit(self):
         self.bootupRabbit()
+        print(f"Trynig reconnect - {self.rabbitStatus}")
         if self.rabbitStatus:
             return
         else:
             time.sleep(self.reconnectTimerSeconds)
 
     def run(self):
-        self.rabbitReciveThread = threading.Thread(target = self.rabbit.receiveData, daemon = True)
+        self.rabbitReciveThread = threading.Thread(target = self.receiveData, daemon = True)
         self.rabbitReciveThread.start()
 
 
@@ -49,3 +50,5 @@ if __name__ == "__main__":
     r1.bootupRabbit()
     r1.run()
 
+    while True:
+        pass
