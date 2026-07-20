@@ -32,17 +32,16 @@ class RabbitMQController:
         self.createRabbitThread()
         self.rabbitStatus = self.rabbit.connected
 
-    def createJsonMsg(self, data):
-        #TODO: Add check data type and create obj accordingly - If dict use json.dumps
+    def createJsonMsg(self, type, data):
         return {
             "uuid": "macAddress",
-            "Type": 1,
+            "Type": type,
             "timestamp": datetime.datetime.now().timestamp(),
             "data": data
         }
 
-    def sendData(self, data):
-        jsonMsg = json.dumps(self.createJsonMsg(data))
+    def sendData(self, type, data):
+        jsonMsg = json.dumps(self.createJsonMsg(type, data))
         self.sendQueue.put(jsonMsg)
 
     def handleCommands(self):
@@ -67,9 +66,22 @@ if __name__ == "__main__":
     r1.bootupRabbit()
     r1.run()
 
-    time.sleep(2)
+    time.sleep(1)
 
-    r1.sendData("Test")
+    r1.sendData(0, "Test")
+
+    time.sleep(1)
+
+    r1.sendData(1, "heartbeat")
+
+    time.sleep(1)
+
+    testJson = {
+            "d1": "Data 1",
+            "d2": "Data 2"
+        }
+    
+    r1.sendData(2, testJson)
 
     while True:
         pass
