@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import pika
+from queue import Queue
 
 class RabbitMQ:
 
@@ -24,7 +25,12 @@ class RabbitMQ:
     def createQueue(self):
         try:
             credentials = pika.PlainCredentials('firecamera', 'camerafire')
-            parameters = pika.ConnectionParameters(self.ip, self.port,)# "/", credentials )
+            parameters = pika.ConnectionParameters(
+                self.ip, 
+                self.port,
+                socket_timeout = 5,
+                connection_attempts = 1
+            )# "/", credentials )
             self.connection = pika.BlockingConnection(parameters)
             self.channel = self.connection.channel()
 
@@ -33,19 +39,19 @@ class RabbitMQ:
             self.connected = True
 
             self.receiveData()
-            
+
             return True
         except Exception as e:
-            print(f"Error creating Queue - {e}")
+            print(f"Error creating Queue - {e} - {type(e).__name__}")
+            self.connected = False
             return False
 
     def sendData(self):
         try:
             # print(f"Send data - {self.sendQueue.empty()}")
             while not self.sendQueue.empty():
-
                 msg = self.sendQueue.get()
-                
+
                 self.channel.basic_publish(
                     exchange = '',
                     routing_key = self.queueName,
@@ -54,13 +60,14 @@ class RabbitMQ:
 
             return True
         except Exception as e:
-            print(f"Failed to send data - {e}")
+            print(f"Failed to send data - {type(e).__name__} - {e}")
+            self.connected = False
             return False
 
     def receiveData(self):
         try:
             if not self.connected or self.channel == None:
-                return
+                raise Exception("Not Connected") 
 
             self.channel.basic_qos(prefetch_count = 1)
             self.channel.basic_consume(
@@ -70,11 +77,33 @@ class RabbitMQ:
             # self.channel.start_consuming()
         except Exception as e:
             print(f"Failed to recieve Data - {e}")
-            raise e
+            self.connected = False
+            return False
 
     def handleReceivedData(self, ch, method, properties, body):
-        self.msgQueue.put(body)
-        ch.basic_ack(delivery_tag = method.delivery_tag)
+        try:
+            self.msgQueue.put(body, block = False)
+            ch.basic_ack(delivery_tag = method.delivery_tag)
+        except Exception as e:
+            print(f"Error handling data - {type(e).__name__} - {e}")
+            return False
+
+    def processData(self):
+        try:
+            if not self.connected or self.channel == None:
+                raise Exception("Not Connected") 
+            
+            self.connection.process_data_events(time_limit=1)
+        except Exception as e:
+            print(f"Failed to recieve Data - {e}")
+            self.connected = False
+            return False
+            
+
+    def reconnect(self):
+        if self.createQueue():
+            return
+        time.sleep(5)
 
 
     def run(self):
@@ -83,24 +112,17 @@ class RabbitMQ:
 
         while self.running:
             if self.connected is False:
-                self.createQueue()
+                self.reconnect()
+                continue
 
             self.sendData()
 
-            self.connection.process_data_events(time_limit=1)
+            self.processData()
 
 if __name__ == "__main__":
-    r1 = RabbitMQ(ip="192.168.89.80")
-
-    r1.createQueue()
-    r1.sendData("Hello World - 0")
-    time.sleep(1)
-    msgToSend = 100
-
-    for x in range(msgToSend):
-
-        r1.sendData(f"ID - {x}")
-        time.sleep(0.5)
+    msgQueue = Queue(maxsize=50)
+    sendQueue = Queue(maxsize=50)
+    r1 = RabbitMQ(msgQueue, sendQueue, ip="192.168.89.80")
 
 
     # r1.recieveData()

@@ -3,10 +3,10 @@ import json
 import datetime
 import threading
 from queue import Queue
-# from lib.rabbit.rabbitMQ import RabbitMQ
-# from lib.rabbit.rabbitCommandHandler import RabbitCommandHandler
-from rabbitMQ import RabbitMQ
-from rabbitCommandHandler import RabbitCommandHandler
+from lib.rabbit.rabbitMQ import RabbitMQ
+from lib.rabbit.rabbitCommandHandler import RabbitCommandHandler
+# from rabbitMQ import RabbitMQ
+# from rabbitCommandHandler import RabbitCommandHandler
 
 
 class RabbitMQController:
@@ -19,6 +19,7 @@ class RabbitMQController:
         self.rabbit = RabbitMQ(
             self.msgQueue, 
             self.sendQueue,
+            # ip="192.168.89.80",
             ip="192.168.89.80",
         )
 
@@ -40,9 +41,13 @@ class RabbitMQController:
             "data": data
         }
 
-    def sendData(self, type, data):
-        jsonMsg = json.dumps(self.createJsonMsg(type, data))
-        self.sendQueue.put(jsonMsg)
+    def sendData(self, command, data):
+        try:
+            jsonMsg = json.dumps(self.createJsonMsg(command, data))
+            self.sendQueue.put(jsonMsg, block = False)
+        except Exception as e:
+            print(f"Error handling data - {type(e).__name__} - {e}")
+            return False
 
     def handleCommands(self):
         while self.running:
@@ -63,6 +68,7 @@ class RabbitMQController:
 
 if __name__ == "__main__":
     r1 = RabbitMQController()
+
     r1.bootupRabbit()
     r1.run()
 
