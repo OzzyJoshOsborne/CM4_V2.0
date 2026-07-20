@@ -1,8 +1,11 @@
 import time
 import threading
 from queue import Queue
+# from lib.rabbit.rabbitMQ import RabbitMQ
+# from lib.rabbit.rabbitCommandHandler import RabbitCommandHandler
 from rabbitMQ import RabbitMQ
 from rabbitCommandHandler import RabbitCommandHandler
+
 
 class RabbitMQController:
 
@@ -24,32 +27,11 @@ class RabbitMQController:
         self.running = True
 
     def bootupRabbit(self):
-        self.rabbitStatus = self.rabbit.createQueue()
+        self.createRabbitThread()
+        self.rabbitStatus = self.rabbit.connected
 
     def sendData(self, data):
         self.sendQueue.put(data)
-        # try:
-        #     self.rabbit.sendData(data)
-        # except Exception as e:
-        #     print(e)
-        #     self.rabbitStatus = False
-
-    def receiveData(self):
-        while self.running:
-            if self.rabbitStatus is False:
-                self.reconnectRabbit()
-                continue
-
-            try:
-                self.rabbit.receiveData()
-
-            except Exception as e:
-                print(e)
-                self.rabbitStatus = False
-
-    def reconnectRabbit(self):
-        self.bootupRabbit()
-        print(f"Trynig reconnect - {self.rabbitStatus}")
 
     def handleCommands(self):
         while self.running:

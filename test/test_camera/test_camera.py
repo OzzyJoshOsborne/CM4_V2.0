@@ -2,7 +2,7 @@ import pytest
 import subprocess
 from unittest.mock import MagicMock, patch
 
-from camera import Camera
+from lib.camera.camera import Camera
 
 #Connected
 @patch("camera.subprocess")

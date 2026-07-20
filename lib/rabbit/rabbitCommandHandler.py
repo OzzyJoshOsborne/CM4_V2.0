@@ -5,7 +5,7 @@ class RabbitCommandHandler:
         pass
 
     def processsMsg(self, msg):
-        print(f"New MSG Recived - {msg}")
+        print(f"New MSG Recived - Command Handler - {msg}")
 
     def handleCommand(self, command):
 

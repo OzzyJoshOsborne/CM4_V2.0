@@ -3,14 +3,14 @@ from unittest.mock import MagicMock, patch, PropertyMock
 
 #Connect
 def test_connected():
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     BME688 = SensorBME688()
     assert BME688._isConnected(1) == True
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_connected_wrongAddress(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -21,7 +21,7 @@ def test_connected_wrongAddress(mockSmBus):
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_connected_wrongBus(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockSmBus.side_effect = OSError
 
@@ -32,7 +32,7 @@ def test_connected_wrongBus(mockSmBus):
 #Test set/get regs
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_setRegs_sucess_byte(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -45,7 +45,7 @@ def test_setRegs_sucess_byte(mockSmBus):
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_setRegs_sucess_block(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -58,7 +58,7 @@ def test_setRegs_sucess_block(mockSmBus):
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_setRegs_failedWrite(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -78,7 +78,7 @@ def test_setRegs_failedWrite(mockSmBus):
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_getRegs_sucess_byte(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -91,7 +91,7 @@ def test_getRegs_sucess_byte(mockSmBus):
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_getRegs_sucess_block(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -104,7 +104,7 @@ def test_getRegs_sucess_block(mockSmBus):
 
 @patch("sensors.sensorBME688.smbus2.SMBus")
 def test_getRegs_failedRead(mockSmBus):
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     mockBus = MagicMock()
     mockSmBus.return_value.__enter__.return_value = mockBus
@@ -134,7 +134,7 @@ def test_calibration_brokenData():
 
 #Bootup
 def test_bootup_sucess():
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     BME688 = SensorBME688()
 
@@ -144,7 +144,7 @@ def test_bootup_sucess():
     assert BME688.bootup() == True
 
 def test_bootup_fail():
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     BME688 = SensorBME688()
 
@@ -187,7 +187,7 @@ def test_calc_humidity_wrongCalibration():
 
 #Get Sensor Data
 def test_getSensorData():
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     BME688 = SensorBME688()
     BME688.connected = True
@@ -203,7 +203,7 @@ def test_getSensorData():
     assert BME688.getSensorData() == True
 
 def test_getSensorData_10Attempts():
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     BME688 = SensorBME688()
     BME688.connected = True
@@ -223,7 +223,7 @@ def test_getSensorData_10Attempts():
     assert BME688.getSensorData() == False
 
 def test_getSensorData_setPowerFail():
-    from sensors.sensorBME688 import SensorBME688
+    from lib.sensors.sensorBME688 import SensorBME688
 
     BME688 = SensorBME688()
     BME688.connected = True

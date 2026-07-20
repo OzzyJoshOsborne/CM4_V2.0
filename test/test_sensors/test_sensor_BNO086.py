@@ -4,14 +4,14 @@ from unittest.mock import MagicMock, patch, PropertyMock
 
 #Connect
 def test_connected():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     BNO086 = SensorBNO086()
     assert BNO086._isConnected(1) == True
 
 @patch("sensors.sensorBNO086.smbus2")
 def test_connected_wrongAddress(mockSmBus):
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockBus = MagicMock()
     mockSmBus.SMBus.return_value.__enter__.return_value = mockBus
@@ -22,7 +22,7 @@ def test_connected_wrongAddress(mockSmBus):
 
 @patch("sensors.sensorBNO086.smbus2.SMBus")
 def test_connected_wrongBus(mockSmBus):
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockSmBus.side_effect = OSError
 
@@ -31,7 +31,7 @@ def test_connected_wrongBus(mockSmBus):
 
 #Bootup
 def test_bootup_sucess():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     BNO086 = SensorBNO086()
 
@@ -39,7 +39,7 @@ def test_bootup_sucess():
 
 @patch("sensors.sensorBNO086.busio.I2C")
 def test_bootup_fail_i2c(mockI2c):
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockI2c.side_effect = OSError("I2C Bus Failed")
 
@@ -49,7 +49,7 @@ def test_bootup_fail_i2c(mockI2c):
 
 @patch("sensors.sensorBNO086.BNO08X_I2C")
 def test_bootup_fail_bno(mockBNO):
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockBNO.side_effect = OSError("BNO Sensor Failed")
 
@@ -59,7 +59,7 @@ def test_bootup_fail_bno(mockBNO):
 
 @patch("sensors.sensorBNO086.BNO08X_I2C")
 def test_bootup_fail_bno_cali(mockBNO):
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
 
     mockSensor = MagicMock()
@@ -74,7 +74,7 @@ def test_bootup_fail_bno_cali(mockBNO):
 
 @patch("sensors.sensorBNO086.BNO08X_I2C")
 def test_bootup_fail_bno_enable(mockBNO):
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
 
     mockSensor = MagicMock()
@@ -90,7 +90,7 @@ def test_bootup_fail_bno_enable(mockBNO):
 
 #Quaternion Data
 def test_quaternion():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockBNO = MagicMock()
 
@@ -106,7 +106,7 @@ def test_quaternion():
     assert BNO086.quaternionData == (10,10,10,10)
 
 def test_quaternion_fail():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockBNO = MagicMock()
 
@@ -124,7 +124,7 @@ def test_quaternion_fail():
 
 #Calc Euler
 def test_calcEuler():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     BNO086 = SensorBNO086()
 
@@ -137,7 +137,7 @@ def test_calcEuler():
     assert BNO086._calcEulerAngles(w,x,y,z) == pytest.approx(yaw_pitch_roll, abs=0.000001)
 
 def test_calcEuler_badData():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     BNO086 = SensorBNO086()
 
@@ -146,7 +146,7 @@ def test_calcEuler_badData():
     assert BNO086._calcEulerAngles(w,x,y,z) == (0, 0, 0)
 
 def test_calcEuler_noData():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     BNO086 = SensorBNO086()
 
@@ -155,7 +155,7 @@ def test_calcEuler_noData():
 
 #Get Sensor Data
 def test_getSensorData():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     mockBNO = MagicMock()
 
@@ -175,7 +175,7 @@ def test_getSensorData():
     assert BNO086.data.roll == pytest.approx(0.0, abs=0.000001)
 
 def test_getSensorData_noSensor():
-    from sensors.sensorBNO086 import SensorBNO086
+    from lib.sensors.sensorBNO086 import SensorBNO086
 
     BNO086 = SensorBNO086()
     BNO086.connected = True

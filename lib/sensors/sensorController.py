@@ -1,8 +1,8 @@
 import time
 import threading
-import sensors.sensorBME688 as BME688
-import sensors.sensorFS3000 as FS3000
-import sensors.sensorBNO086 as BNO086
+import lib.sensors.sensorBME688 as BME688
+import lib.sensors.sensorFS3000 as FS3000
+import lib.sensors.sensorBNO086 as BNO086
 
 class SensorController:
 

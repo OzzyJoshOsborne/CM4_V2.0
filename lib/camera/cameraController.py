@@ -2,7 +2,7 @@
 import cv2
 import time
 import threading
-from camera import Camera
+from lib.camera.camera import Camera
 
 class CameraController:
 

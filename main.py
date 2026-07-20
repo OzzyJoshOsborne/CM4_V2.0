@@ -7,11 +7,11 @@ import sys
 import termios
 import tty
 
-import systemData as SystemData
-import displayController as Display
-import sensorController as Sensors
-import cameraController as Camera
-import rabbitMQController as Rabbit
+import lib.systemData as SystemData
+import lib.camera.displayController as Display
+import lib.sensors.sensorController as Sensors
+import lib.camera.cameraController as Camera
+import lib.rabbit.rabbitMQController as Rabbit
 
 class Main:
     def __init__(self):
@@ -61,7 +61,8 @@ class Main:
         bootStatus['Create-Message RabbitMQ'] = {}
         self.display.showBootStatus(bootStatus)
 
-        # self.rabbitController.bootupRabbit()
+        self.rabbitController.bootupRabbit()
+
         msg = ""
         if self.rabbitController.rabbitStatus:
             msg += "Queue Success"
@@ -70,7 +71,6 @@ class Main:
 
         bootStatus['Create-Message RabbitMQ'][msg] = 1 if self.rabbitController.rabbitStatus else 2
         self.display.showBootStatus(bootStatus)
-
 
 
         #Camera
@@ -86,7 +86,6 @@ class Main:
 
         bootStatus['Check-Camera Presence'][msg] = 1 if self.systemData.cameraStatus else 2
         self.display.showBootStatus(bootStatus)
-
 
 
         #Sensors

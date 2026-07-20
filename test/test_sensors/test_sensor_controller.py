@@ -9,8 +9,8 @@ sys.modules["sensors.sensorBME688"] = mockBME
 sys.modules["sensors.sensorBNO086"] = mockBNO
 sys.modules["sensors.sensorFS3000"] = mockFE3
 
-from sensorController import SensorController
-import systemData
+from lib.sensors.sensorController import SensorController
+import lib.systemData as systemData
 
 #Bootup
 def test_bootup_sucess():

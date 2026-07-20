@@ -4,8 +4,6 @@ import sys
 import time
 import pika
 
-from test_code.rabbit_test_send import send
-
 class RabbitMQ:
 
     def __init__(self, receiveQueue, sendQueue, ip="10.0.1.1"):
@@ -50,7 +48,7 @@ class RabbitMQ:
                 
                 self.channel.basic_publish(
                     exchange = '',
-                    routing_key = 'hello',
+                    routing_key = self.queueName,
                     body = msg
                 )
 

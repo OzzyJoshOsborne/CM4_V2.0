@@ -2,8 +2,8 @@ import pytest
 import subprocess
 from unittest.mock import MagicMock, patch
 
-from cameraController import CameraController
-from systemData import SystemData
+from lib.camera.cameraController import CameraController
+from lib.systemData import SystemData
 
 
 #Bootup

@@ -1,8 +1,8 @@
 import time
 from enum import Enum, auto
 from turtle import Screen
-from cameraController import CameraController
-import displayST7735 as Display
+from lib.camera.cameraController import CameraController
+import lib.display.displayST7735 as Display
 
 class Screens(Enum):
     VIEW = 0
