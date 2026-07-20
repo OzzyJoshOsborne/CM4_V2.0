@@ -1,4 +1,6 @@
 import time
+import json
+import datetime
 import threading
 from queue import Queue
 # from lib.rabbit.rabbitMQ import RabbitMQ
@@ -11,8 +13,8 @@ class RabbitMQController:
 
     def __init__(self):
         
-        self.msgQueue = Queue()
-        self.sendQueue = Queue()
+        self.msgQueue = Queue(maxsize=50)
+        self.sendQueue = Queue(maxsize=50)
 
         self.rabbit = RabbitMQ(
             self.msgQueue, 
@@ -30,8 +32,18 @@ class RabbitMQController:
         self.createRabbitThread()
         self.rabbitStatus = self.rabbit.connected
 
+    def createJsonMsg(self, data):
+        #TODO: Add check data type and create obj accordingly - If dict use json.dumps
+        return {
+            "uuid": "macAddress",
+            "Type": 1,
+            "timestamp": datetime.datetime.now().timestamp(),
+            "data": data
+        }
+
     def sendData(self, data):
-        self.sendQueue.put(data)
+        jsonMsg = json.dumps(self.createJsonMsg(data))
+        self.sendQueue.put(jsonMsg)
 
     def handleCommands(self):
         while self.running:
@@ -47,13 +59,12 @@ class RabbitMQController:
         self.rabbitHandlerThread.start()
 
     def run(self):
-        self.createRabbitThread()
         self.createHandlerThread()
 
 
 if __name__ == "__main__":
     r1 = RabbitMQController()
-    # r1.bootupRabbit()
+    r1.bootupRabbit()
     r1.run()
 
     time.sleep(2)
