@@ -151,7 +151,9 @@ class Main:
                 "time": datetime.now()
             }
 
-            self.rabbitController.sendData("heartbeatMsg")
+            commandNum = 0
+
+            self.rabbitController.sendData(commandNum, "heartbeatMsg")
             time.sleep(2)
 
     def startHeartbeatThread(self):
