@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from lib.camera.camera import Camera
 
 #Connected
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_isConnected_connected(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -18,7 +18,7 @@ def test_isConnected_connected(mockSubPro):
 
     assert camera._isConnected() == True
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_isConnected_notConnected(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -31,7 +31,7 @@ def test_isConnected_notConnected(mockSubPro):
 
     assert camera._isConnected() == False
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_isConnected_wrongName(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -44,7 +44,7 @@ def test_isConnected_wrongName(mockSubPro):
 
     assert camera._isConnected() == False
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_isConnected_numVideoDevices(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -57,7 +57,7 @@ def test_isConnected_numVideoDevices(mockSubPro):
 
     assert camera._isConnected() == False
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_isConnected_emptyOutput(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -70,7 +70,7 @@ def test_isConnected_emptyOutput(mockSubPro):
 
     assert camera._isConnected() == False
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_isConnected_subprocessException(mockSubPro):
     mockSubPro.run.side_effect = FileNotFoundError()
     
@@ -80,7 +80,7 @@ def test_isConnected_subprocessException(mockSubPro):
 
 
 #Check Stream Running
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_checkStreamRunning_running(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -93,7 +93,7 @@ def test_checkStreamRunning_running(mockSubPro):
 
     assert camera.checkStreamRunning() == True
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_checkStreamRunning_notRunning(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -106,7 +106,7 @@ def test_checkStreamRunning_notRunning(mockSubPro):
 
     assert camera.checkStreamRunning() == False
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_checkStreamRunning_exception(mockSubPro):
     mockSubPro.run.side_effect = FileNotFoundError()
     
@@ -126,7 +126,7 @@ def test_createCommand_default():
 
 
 #Start Stream
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_startStream_pass(mockSubPro):
     mockSubPro.Popen.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -142,7 +142,7 @@ def test_startStream_pass(mockSubPro):
 
     assert camera.startStream() == True
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_startStream_failed(mockSubPro):
     mockSubPro.Popen.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -157,7 +157,7 @@ def test_startStream_failed(mockSubPro):
 
 
 #End Strean
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_endStream_sucess(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -170,7 +170,7 @@ def test_endStream_sucess(mockSubPro):
 
     assert camera.endStream() == True
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_endStream_fail(mockSubPro):
     mockSubPro.run.return_value = subprocess.CompletedProcess(
         args=["my-command"],
@@ -183,7 +183,7 @@ def test_endStream_fail(mockSubPro):
 
     assert camera.endStream() == False
 
-@patch("camera.subprocess")
+@patch("lib.camera.camera.subprocess")
 def test_endStream_error(mockSubPro):
     mockSubPro.run.return_value = FileNotFoundError()
     

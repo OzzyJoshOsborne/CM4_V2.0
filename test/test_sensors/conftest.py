@@ -17,5 +17,5 @@ def mock_pi_libraries(monkeypatch):
     monkeypatch.setitem(sys.modules, "adafruit_bno08x.i2c", MagicMock())
 
     for module in list(sys.modules):
-        if module.startswith("sensors."):
+        if module.startswith("lib.sensors."):
             del sys.modules[module]

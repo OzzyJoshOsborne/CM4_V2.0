@@ -2,27 +2,21 @@ import sys
 import pytest
 from unittest.mock import MagicMock, patch, PropertyMock
 
-mockBME = MagicMock()
-mockBNO = MagicMock()
-mockFE3 = MagicMock()
-sys.modules["sensors.sensorBME688"] = mockBME
-sys.modules["sensors.sensorBNO086"] = mockBNO
-sys.modules["sensors.sensorFS3000"] = mockFE3
-
-from lib.sensors.sensorController import SensorController
 import lib.systemData as systemData
 
 #Bootup
 def test_bootup_sucess():
+    from lib.sensors.sensorController import SensorController
 
     controller = SensorController(systemData.SystemData())
 
     assert controller.bootup() == True
 
-@patch("sensorController.BME688")
-@patch("sensorController.BNO086")
-@patch("sensorController.FS3000")
+@patch("lib.sensors.sensorController.BME688")
+@patch("lib.sensors.sensorController.BNO086")
+@patch("lib.sensors.sensorController.FS3000")
 def test_bootup_sensorFails(mockFS3, mockBNO, mockBME):
+    from lib.sensors.sensorController import SensorController
 
     mockBME.SensorBME688.return_value.bootup.return_value = False
     mockBNO.SensorBNO086.return_value.bootup.return_value = False
@@ -42,10 +36,11 @@ def test_bootup_sensorFails(mockFS3, mockBNO, mockBME):
     assert controller.data.FS3000Status == False
 
 #Run Sensors
-@patch("sensorController.BME688")
-@patch("sensorController.BNO086")
-@patch("sensorController.FS3000")
+@patch("lib.sensors.sensorController.BME688")
+@patch("lib.sensors.sensorController.BNO086")
+@patch("lib.sensors.sensorController.FS3000")
 def test_run_sucess(mockFS3, mockBNO, mockBME):
+    from lib.sensors.sensorController import SensorController
 
     controller = SensorController(systemData.SystemData())
 
@@ -57,10 +52,11 @@ def test_run_sucess(mockFS3, mockBNO, mockBME):
     mockFS3.SensorFS3000.return_value.getData.assert_called_once()
 
 
-@patch("sensorController.BME688")
-@patch("sensorController.BNO086")
-@patch("sensorController.FS3000")
+@patch("lib.sensors.sensorController.BME688")
+@patch("lib.sensors.sensorController.BNO086")
+@patch("lib.sensors.sensorController.FS3000")
 def test_run_failed(mockFS3, mockBNO, mockBME):
+    from lib.sensors.sensorController import SensorController
 
     mockBME.SensorBME688.return_value.getSensorData.side_effect = IOError
     mockBNO.SensorBNO086.return_value.getSensorData.side_effect = IOError

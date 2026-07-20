@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 #Connected
-@patch("sensors.sensorFS3000.smbus2.SMBus")
+@patch("lib.sensors.sensorFS3000.smbus2.SMBus")
 def test_connected(mockSmBus): 
     from lib.sensors.sensorFS3000 import SensorFS3000
 
@@ -13,7 +13,7 @@ def test_connected(mockSmBus):
     assert FS3000._isConnected(1) == True
 
 
-@patch("sensors.sensorFS3000.smbus2.SMBus")
+@patch("lib.sensors.sensorFS3000.smbus2.SMBus")
 def test_connected_wrongAddress(mockSmBus):
     from lib.sensors.sensorFS3000 import SensorFS3000
 
@@ -24,7 +24,7 @@ def test_connected_wrongAddress(mockSmBus):
     FS3000 = SensorFS3000()
     assert FS3000._isConnected(1) == False
 
-@patch("sensors.sensorFS3000.smbus2.SMBus")
+@patch("lib.sensors.sensorFS3000.smbus2.SMBus")
 def test_connected_wrongBus(mockSmBus):
     from lib.sensors.sensorFS3000 import SensorFS3000
 
@@ -90,7 +90,7 @@ def test_checksum_corrupted():
 
 
 #Raw Air Flow
-@patch("sensors.sensorFS3000.smbus2")
+@patch("lib.sensors.sensorFS3000.smbus2")
 def test_get_rawAirflow(mockSmBus):
     from lib.sensors.sensorFS3000 import SensorFS3000
 
@@ -111,7 +111,7 @@ def test_get_rawAirFlow_bad_data():
 
     assert FS3000._rawAirflow() == False
 
-@patch("sensors.sensorFS3000.smbus2.SMBus")
+@patch("lib.sensors.sensorFS3000.smbus2.SMBus")
 def test_get_rawAirflow_brokenBus(mockSmBus):
     from lib.sensors.sensorFS3000 import SensorFS3000
     

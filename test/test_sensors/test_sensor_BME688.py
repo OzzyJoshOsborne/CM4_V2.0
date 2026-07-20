@@ -8,7 +8,7 @@ def test_connected():
     BME688 = SensorBME688()
     assert BME688._isConnected(1) == True
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_connected_wrongAddress(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -19,7 +19,7 @@ def test_connected_wrongAddress(mockSmBus):
     BME688 = SensorBME688()
     assert BME688._isConnected(1) == False
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_connected_wrongBus(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -30,7 +30,7 @@ def test_connected_wrongBus(mockSmBus):
 
 
 #Test set/get regs
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_setRegs_sucess_byte(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -43,7 +43,7 @@ def test_setRegs_sucess_byte(mockSmBus):
 
     mockBus.write_byte_data.assert_called_once()
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_setRegs_sucess_block(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -56,7 +56,7 @@ def test_setRegs_sucess_block(mockSmBus):
 
     mockBus.write_i2c_block_data.assert_called_once()
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_setRegs_failedWrite(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -76,7 +76,7 @@ def test_setRegs_failedWrite(mockSmBus):
     mockBus.write_byte_data.assert_called_once()
     mockBus.write_i2c_block_data.assert_called_once()
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_getRegs_sucess_byte(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -89,7 +89,7 @@ def test_getRegs_sucess_byte(mockSmBus):
     assert BME688._getRegs(10, 1) == 10 
     mockBus.read_byte_data.assert_called_once()
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_getRegs_sucess_block(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 
@@ -102,7 +102,7 @@ def test_getRegs_sucess_block(mockSmBus):
     assert BME688._getRegs(10, 2) == [10, 10] 
     mockBus.read_i2c_block_data.assert_called_once()
 
-@patch("sensors.sensorBME688.smbus2.SMBus")
+@patch("lib.sensors.sensorBME688.smbus2.SMBus")
 def test_getRegs_failedRead(mockSmBus):
     from lib.sensors.sensorBME688 import SensorBME688
 

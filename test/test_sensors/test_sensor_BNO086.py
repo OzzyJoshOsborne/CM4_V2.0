@@ -9,7 +9,7 @@ def test_connected():
     BNO086 = SensorBNO086()
     assert BNO086._isConnected(1) == True
 
-@patch("sensors.sensorBNO086.smbus2")
+@patch("lib.sensors.sensorBNO086.smbus2")
 def test_connected_wrongAddress(mockSmBus):
     from lib.sensors.sensorBNO086 import SensorBNO086
 
@@ -20,7 +20,7 @@ def test_connected_wrongAddress(mockSmBus):
     BNO086 = SensorBNO086()
     assert BNO086._isConnected(1) == False
 
-@patch("sensors.sensorBNO086.smbus2.SMBus")
+@patch("lib.sensors.sensorBNO086.smbus2.SMBus")
 def test_connected_wrongBus(mockSmBus):
     from lib.sensors.sensorBNO086 import SensorBNO086
 
@@ -37,7 +37,7 @@ def test_bootup_sucess():
 
     assert BNO086.bootup() == True
 
-@patch("sensors.sensorBNO086.busio.I2C")
+@patch("lib.sensors.sensorBNO086.busio.I2C")
 def test_bootup_fail_i2c(mockI2c):
     from lib.sensors.sensorBNO086 import SensorBNO086
 
@@ -47,7 +47,7 @@ def test_bootup_fail_i2c(mockI2c):
 
     assert BNO086.bootup() == False
 
-@patch("sensors.sensorBNO086.BNO08X_I2C")
+@patch("lib.sensors.sensorBNO086.BNO08X_I2C")
 def test_bootup_fail_bno(mockBNO):
     from lib.sensors.sensorBNO086 import SensorBNO086
 
@@ -57,7 +57,7 @@ def test_bootup_fail_bno(mockBNO):
 
     assert BNO086.bootup() == False
 
-@patch("sensors.sensorBNO086.BNO08X_I2C")
+@patch("lib.sensors.sensorBNO086.BNO08X_I2C")
 def test_bootup_fail_bno_cali(mockBNO):
     from lib.sensors.sensorBNO086 import SensorBNO086
 
@@ -72,7 +72,7 @@ def test_bootup_fail_bno_cali(mockBNO):
 
     assert BNO086.bootup() == False
 
-@patch("sensors.sensorBNO086.BNO08X_I2C")
+@patch("lib.sensors.sensorBNO086.BNO08X_I2C")
 def test_bootup_fail_bno_enable(mockBNO):
     from lib.sensors.sensorBNO086 import SensorBNO086
 
