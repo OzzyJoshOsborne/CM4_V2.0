@@ -18,6 +18,7 @@ class RabbitMQ:
         self.sendQueue = sendQueue
 
         self.connected = False
+        self.connection = None
         self.channel = None
 
         self.running = True
@@ -99,12 +100,10 @@ class RabbitMQ:
             self.connected = False
             return False
             
-
     def reconnect(self):
         if self.createQueue():
             return
         time.sleep(5)
-
 
     def run(self):
 

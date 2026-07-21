@@ -8,7 +8,7 @@ import termios
 import tty
 
 import lib.systemData as SystemData
-import lib.camera.displayController as Display
+import lib.display.displayController as Display
 import lib.sensors.sensorController as Sensors
 import lib.camera.cameraController as Camera
 import lib.rabbit.rabbitMQController as Rabbit
@@ -23,7 +23,7 @@ class Main:
         self.cameraController = Camera.CameraController(self.systemData)
         self.sensorsController = Sensors.SensorController(self.systemData)
 
-        self.display = Display.DisplayController(self.systemData, self.cameraController)
+        self.displayController = Display.DisplayController(self.systemData, self.cameraController)
 
         self.bootup()
 
@@ -35,7 +35,7 @@ class Main:
     def bootup(self):
         bootStatus = {}
 
-        self.display.showLogo()
+        self.displayController.showLogo()
         time.sleep(0.1)
 
         timeDelay = .1
@@ -43,7 +43,7 @@ class Main:
         #Check Network
         bootStatus['Check-Network'] = {}
         bootStatus['Check-Network']["NO NETOWORK FOUND"] = 2
-        self.display.showBootStatus(bootStatus)
+        self.displayController.showBootStatus(bootStatus)
         time.sleep(timeDelay)
 
         # #Rabbit 1
@@ -59,7 +59,7 @@ class Main:
         # time.sleep(timeDelay)
 
         bootStatus['Create-Message RabbitMQ'] = {}
-        self.display.showBootStatus(bootStatus)
+        self.displayController.showBootStatus(bootStatus)
 
         self.rabbitController.bootupRabbit()
 
@@ -70,12 +70,12 @@ class Main:
             msg += "Queue Failed"
 
         bootStatus['Create-Message RabbitMQ'][msg] = 1 if self.rabbitController.rabbitStatus else 2
-        self.display.showBootStatus(bootStatus)
+        self.displayController.showBootStatus(bootStatus)
 
 
         #Camera
         bootStatus['Check-Camera Presence'] = {}
-        self.display.showBootStatus(bootStatus)
+        self.displayController.showBootStatus(bootStatus)
 
         self.cameraController.bootupCamera()
         msg = ""
@@ -85,12 +85,12 @@ class Main:
             msg += "Camera Not Present"
 
         bootStatus['Check-Camera Presence'][msg] = 1 if self.systemData.cameraStatus else 2
-        self.display.showBootStatus(bootStatus)
+        self.displayController.showBootStatus(bootStatus)
 
 
         #Sensors
         bootStatus['Check-Device Sensors'] = {}
-        self.display.showBootStatus(bootStatus)
+        self.displayController.showBootStatus(bootStatus)
 
         sensorResults = threading.Thread(target = self.sensorsController.bootup, daemon = True)
         sensorResults.start()
@@ -105,7 +105,7 @@ class Main:
                 else:
                     msg += " Sensor Not Found"
                 bootStatus['Check-Device Sensors'][msg] = 1 if self.systemData.BME688Status else 2
-                self.display.showBootStatus(bootStatus)
+                self.displayController.showBootStatus(bootStatus)
 
             if self.systemData.FS3000Status is not None:
                 msg = 'AVS'
@@ -114,7 +114,7 @@ class Main:
                 else:
                     msg += " Sensor Not Found"
                 bootStatus['Check-Device Sensors'][msg] = 1 if self.systemData.FS3000Status else 2
-                self.display.showBootStatus(bootStatus)
+                self.displayController.showBootStatus(bootStatus)
 
             if self.systemData.BNO086Status is not None:
                 msg = 'IMU'
@@ -123,7 +123,7 @@ class Main:
                 else:
                     msg += " Sensor Not Found"
                 bootStatus['Check-Device Sensors'][msg] = 1 if self.systemData.BNO086Status else 2
-                self.display.showBootStatus(bootStatus)
+                self.displayController.showBootStatus(bootStatus)
 
             if self.systemData.BME688Status is not None and self.systemData.FS3000Status is not None and self.systemData.BNO086Status is not None:
                 sensorsBooting = False
@@ -139,7 +139,7 @@ class Main:
 
         time.sleep(0.1)
 
-        self.displayThread = threading.Thread(target = self.display.startScreenLoop, daemon = True)
+        self.displayThread = threading.Thread(target = self.displayController.startScreenLoop, daemon = True)
         self.displayThread.start()
 
         self.startHeartbeatThread()
@@ -190,19 +190,19 @@ class Main:
             print(key)
 
             if key == "\x1b[A":# Up
-                self.display.handleUserInput(1)
+                self.displayController.handleUserInput(1)
 
             elif key == "\x1b[B": # Down
-                self.display.handleUserInput(2)
+                self.displayController.handleUserInput(2)
 
             elif key == "\x1b[C": # Right
-                self.display.handleUserInput(3)
+                self.displayController.handleUserInput(3)
 
             elif key == "\x1b[D": # Left
-                self.display.handleUserInput(4)
+                self.displayController.handleUserInput(4)
 
             elif key == "\r": # Enter
-                self.display.handleUserInput(3)
+                self.displayController.handleUserInput(3)
 
             elif key == "m":
                 self.cameraController.toggleIFMode()
